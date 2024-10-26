@@ -82,7 +82,7 @@ For example:
 https://resolver.example.com/filtering-incidents/{inc}
 ~~
 
-When dereferencing this URL, HTTP content negotiation for language SHOULD be used; see {{!Section 12 of RFC9110}}.
+When dereferencing this URL, HTTP content negotiation for language SHOULD be used; see {{Section 12 of !RFC9110}}.
 
 # The Filtering Incident Description Format {#format}
 
