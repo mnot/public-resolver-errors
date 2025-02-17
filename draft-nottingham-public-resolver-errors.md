@@ -56,7 +56,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 
 This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".
 
-An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For example:
+An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
 
 ~~~
 https://resolver.example.com/filtering-incidents/{inc}
