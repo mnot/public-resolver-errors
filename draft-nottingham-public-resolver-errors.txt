@@ -192,9 +192,9 @@ Table of Contents
    It MUST be a Level 1 or Level 2 template (see Section 1.2 of
    [RFC6570]).  It has the following variables available to it:
 
-   *  ro: the DNS Resolver Operator ID (see {op-id})
+   ro:  the DNS Resolver Operator ID (see Section 3)
 
-   *  inc: the Filtering Incident ID (see {incident-id})
+   inc:  the Filtering Incident ID (see Section 4)
 
    For example:
 
@@ -232,23 +232,17 @@ Table of Contents
    Names" sub-registry established by
    [I-D.ietf-dnsop-structured-dns-error]:
 
-   *  JSON Name: "ro"
+   JSON Name:  "ro"
+   Short Description:  a short, textual string that uniquely identifies
+      the operator of a DNS resolver
+   Mandatory:  no
+   Specification:  this document
 
-   *  Short Description: a short, textual string that uniquely
-      identifies the operator of a DNS resolver
-
-   *  Mandatory: no
-
-   *  Specification: [this document]
-
-   *  JSON Name: "inc"
-
-   *  Short Description: an opaque, string identifier for a particular
+   JSON Name:  "inc"
+   Short Description:  an opaque, string identifier for a particular
       filtering incident
-
-   *  Mandatory: no
-
-   *  Specification: [this document]
+   Mandatory:  no
+   Specification:  this document
 
 7.2.  The DNS Resolver Identifier Registry
 
@@ -259,13 +253,13 @@ Table of Contents
 
    It contains the following fields:
 
-   *  Name: The name of the DNS resolver operator
+   Name:  The name of the DNS resolver operator
 
-   *  Contact: an e-mail address or other appropriate contact mechanism
+   Contact:  an e-mail address or other appropriate contact mechanism
 
-   *  DNS Resolver Operator ID: see Section 3
+   DNS Resolver Operator ID:  see Section 3
 
-   *  Incident Resolution Template: see Section 5
+   Incident Resolution Template:  see Section 5
 
    The Incident Resolution Template can be updated by the contact at any
    time.  However, operators SHOULD accommodate potentially long lag
