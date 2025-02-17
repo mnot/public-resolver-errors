@@ -126,7 +126,8 @@ Table of Contents
    An application that decides to present errors from "exampleResolver"
    to its users would look up "exampleResolver" in the IANA DNS Resolver
    Identifier Registry (see Section 7.2) and obtain the corresponding
-   template (see Section 5).  For example:
+   template (see Section 5).  For purposes of this example, assume that
+   the registry entry for that value contains:
 
    https://resolver.example.com/filtering-incidents/{inc}
 
