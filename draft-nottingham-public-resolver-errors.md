@@ -68,7 +68,7 @@ That template can be expanded using the value of "inc" to:
 https://resolver.example.com/filtering-incidents/abc123
 ~~~
 
-from which a document (in the format described in {{format}}) explaining the details of the filtering incident can be retrieved:
+from which the application can retrieve a document (in the format described in {{format}}) explaining the details of the filtering incident (in this case, for an English-speaking user):
 
 ~~~ http-message
 GET /filtering-incidents/abc123 HTTP/1.1
@@ -83,11 +83,15 @@ Content-Language: en
 
 {
   "inc": "abc123",
-  "resolver": "The Example DNS Resolver Operator",
+  "resolver": "Example DNS Resolver Operator",
   "authority": "High Court of Fictitious Jurisdiction",
   "description": "Access blocked by Commonwealth v Doe (2025)"
 }
 ~~~
+
+The application could (but might not) then decide to convey some or all of this information to its user; for example, with a statement that conveys:
+
+> Example DNS Resolver Operator says that High Court of Fictitious Jurisdiction has caused this page to be filtered for the following reason: "Access blocked by Commonwealth v Doe (2025)"
 
 
 ## Notational Conventions
