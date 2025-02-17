@@ -80,6 +80,7 @@ Accept-Language: en
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Language: en
+Cache-Control: max-age=3600
 
 {
   "inc": "abc123",
