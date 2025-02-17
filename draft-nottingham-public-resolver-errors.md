@@ -121,9 +121,9 @@ It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It ha
 
 For example:
 
-~~
+~~~
 https://resolver.example.com/filtering-incidents/{inc}
-~~
+~~~
 
 When dereferencing this URL, HTTP content negotiation for language SHOULD be used; see {{Section 12 of !RFC9110}}.
 
