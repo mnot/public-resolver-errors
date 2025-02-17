@@ -62,15 +62,15 @@ Table of Contents
      1.1.  Example
      1.2.  Notational Conventions
    2.  Data Types
-   3.  DNS Resolver Operator ID
-   4.  Filtering Incident ID
-   5.  Incident Resolution Templates
-   6.  The Filtering Incident Details Format
-   7.  IANA Considerations
-     7.1.  EXTRA-TEXT JSON Names
-     7.2.  The DNS Resolver Identifier Registry
-   8.  Security Considerations
-   9.  Normative References
+     2.1.  DNS Resolver Operator ID
+     2.2.  Filtering Incident ID
+   3.  Incident Resolution Templates
+   4.  The Filtering Incident Details Format
+   5.  IANA Considerations
+     5.1.  EXTRA-TEXT JSON Names
+     5.2.  The DNS Resolver Identifier Registry
+   6.  Security Considerations
+   7.  Normative References
    Author's Address
 
 1.  Introduction
@@ -125,8 +125,8 @@ Table of Contents
 
    An application that decides to present errors from "exampleResolver"
    to its users would look up "exampleResolver" in the IANA DNS Resolver
-   Identifier Registry (see Section 7.2) and obtain the corresponding
-   template (see Section 5).  For purposes of this example, assume that
+   Identifier Registry (see Section 5.2) and obtain the corresponding
+   template (see Section 3).  For purposes of this example, assume that
    the registry entry for that value contains:
 
    https://resolver.example.com/filtering-incidents/{inc}
@@ -136,7 +136,7 @@ Table of Contents
    https://resolver.example.com/filtering-incidents/abc123
 
    from which the application can retrieve a document (in the format
-   described in Section 6) explaining the details of the filtering
+   described in Section 4) explaining the details of the filtering
    incident (in this case, for an English-speaking user):
 
    GET /filtering-incidents/abc123 HTTP/1.1
@@ -177,7 +177,7 @@ Table of Contents
    filtering incident from a DNS error response.  Note that these
    identifiers are not for presentation to end users.
 
-3.  DNS Resolver Operator ID
+2.1.  DNS Resolver Operator ID
 
    A DNS Resolver Operator ID is a short, textual string that uniquely
    identifies the operator of a DNS resolver.  It is carried in the
@@ -189,10 +189,10 @@ Table of Contents
    }
 
    Generators MUST only use values that are registered in the DNS
-   Resolver Operator registry; see Section 7.2.  Consumers MUST ignore
+   Resolver Operator registry; see Section 5.2.  Consumers MUST ignore
    unregistered values, and MAY ignore registered values.
 
-4.  Filtering Incident ID
+2.2.  Filtering Incident ID
 
    A Filtering Incident ID is an opaque, string identifier for a
    particular filtering incident.  It might be specific to a particular
@@ -203,19 +203,19 @@ Table of Contents
      "inc": "abc123"
    }
 
-5.  Incident Resolution Templates
+3.  Incident Resolution Templates
 
    An Incident Resolution Template is a URI Template [RFC6570] contained
-   in the DNS Resolver Identifier Registry (Section 7.2) that, upon
+   in the DNS Resolver Identifier Registry (Section 5.2) that, upon
    expansion, provides a URI that can be dereferenced to obtain a
-   Filtering Incident Details document (see Section 6).
+   Filtering Incident Details document (see Section 4).
 
    It MUST be a Level 1 or Level 2 template (see Section 1.2 of
    [RFC6570]).  It has the following variables available to it:
 
-   ro:  the DNS Resolver Operator ID (see Section 3)
+   ro:  the DNS Resolver Operator ID (see Section 2.1)
 
-   inc:  the Filtering Incident ID (see Section 4)
+   inc:  the Filtering Incident ID (see Section 2.2)
 
    For example:
 
@@ -228,7 +228,7 @@ Table of Contents
    Registry for purposes of template lookup; they MUST NOT query the
    IANA registry upon each use.
 
-6.  The Filtering Incident Details Format
+4.  The Filtering Incident Details Format
 
    The Filtering Incident Details Format is a JSON [RFC8259] document
    format for returning information about a particular filtering
@@ -249,9 +249,9 @@ Table of Contents
    All members above are mandatory.  New members can be added by
    updating this specification.
 
-7.  IANA Considerations
+5.  IANA Considerations
 
-7.1.  EXTRA-TEXT JSON Names
+5.1.  EXTRA-TEXT JSON Names
 
    IANA will register the following fields in the "EXTRA-TEXT JSON
    Names" sub-registry established by
@@ -269,7 +269,7 @@ Table of Contents
    Mandatory:  no
    Specification:  this document
 
-7.2.  The DNS Resolver Identifier Registry
+5.2.  The DNS Resolver Identifier Registry
 
    IANA will establish a new registry, the "DNS Resolver Identifier
    Registry."  Its registration policy is first-come, first-served
@@ -282,15 +282,15 @@ Table of Contents
 
    Contact:  an e-mail address or other appropriate contact mechanism
 
-   DNS Resolver Operator ID:  see Section 3
+   DNS Resolver Operator ID:  see Section 2.1
 
-   Incident Resolution Template:  see Section 5
+   Incident Resolution Template:  see Section 3
 
    The Incident Resolution Template can be updated by the contact at any
    time.  However, operators SHOULD accommodate potentially long lag
    times for applications to update their copies of the registry.
 
-8.  Security Considerations
+6.  Security Considerations
 
    This specification does not provide a way to authenticate that a
    particular filtering incident as experienced by an application was
@@ -304,7 +304,7 @@ Table of Contents
    do so.  Future iterations of this specification may introduce more
    robust protections.
 
-   The payload of the Filtering Incident Details document (Section 6) is
+   The payload of the Filtering Incident Details document (Section 4) is
    specified to contain only textual strings.  If an application
    interprets these values -- for example, by parsing them for HTML or
    similar markup -- new attacks may be possible.
@@ -325,7 +325,7 @@ Table of Contents
    application or operating system settings that indicate that a
    particular resolver is to be trusted).
 
-9.  Normative References
+7.  Normative References
 
    [I-D.ietf-dnsop-structured-dns-error]
               Wing, D., Reddy.K, T., Cook, N., and M. Boucadair,
