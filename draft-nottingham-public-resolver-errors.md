@@ -116,8 +116,11 @@ An Incident Resolution Template is a URI Template {{!RFC6570}} that, upon expans
 
 It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables available to it:
 
-* ro: the DNS Resolver Operator ID (see {op-id})
-* inc: the Filtering Incident ID (see {incident-id})
+ro:
+: the DNS Resolver Operator ID (see {{op-id}})
+
+inc:
+: the Filtering Incident ID (see {{incident-id}})
 
 For example:
 
@@ -144,15 +147,32 @@ All members above are mandatory. New members can be added by updating this speci
 
 IANA will register the following fields in the "EXTRA-TEXT JSON Names" sub-registry established by {{I-D.ietf-dnsop-structured-dns-error}}:
 
-* JSON Name: "ro"
-* Short Description: a short, textual string that uniquely identifies the operator of a DNS resolver
-* Mandatory: no
-* Specification: [this document]
+JSON Name:
+: "ro"
 
-* JSON Name: "inc"
-* Short Description: an opaque, string identifier for a particular filtering incident
-* Mandatory: no
-* Specification: [this document]
+Short Description:
+: a short, textual string that uniquely identifies the operator of a DNS resolver
+
+Mandatory:
+: no
+
+Specification:
+: this document
+{: spacing="compact"}
+
+
+JSON Name:
+: "inc"
+
+Short Description:
+: an opaque, string identifier for a particular filtering incident
+
+Mandatory:
+: no
+
+Specification:
+: this document
+{: spacing="compact"}
 
 ## The DNS Resolver Identifier Registry {#registry}
 
@@ -160,10 +180,17 @@ IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its 
 
 It contains the following fields:
 
-* Name: The name of the DNS resolver operator
-* Contact: an e-mail address or other appropriate contact mechanism
-* DNS Resolver Operator ID: see {{op-id}}
-* Incident Resolution Template: see {{template}}
+Name:
+: The name of the DNS resolver operator
+
+Contact:
+: an e-mail address or other appropriate contact mechanism
+
+DNS Resolver Operator ID:
+: see {{op-id}}
+
+Incident Resolution Template:
+: see {{template}}
 
 The Incident Resolution Template can be updated by the contact at any time. However, operators SHOULD accommodate potentially long lag times for applications to update their copies of the registry.
 
@@ -179,4 +206,3 @@ The details of DNS responses are not available to all applications, depending on
 Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which operators' error messages they display to users. This decision might be influenced by the identity of the resolver (e.g., so-called "public resolvers" are likely to use this mechanism responsibly), its history (e.g., a well-known Internet Service Provider that has been subject to legal filtering orders), or local configuration (e.g., application or operating system settings that indicate that a particular resolver is to be trusted).
 
 --- back
-
