@@ -4,25 +4,25 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>Extensions for DNS Public Resolvers</title>
+<title>DNS Filtering Details for Applications</title>
 <meta content="Mark Nottingham" name="author">
 <meta content="
-        introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism. 
+        introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents to their users. 
     " name="description">
-<meta content="xml2rfc 3.24.0" name="generator">
+<meta content="xml2rfc 3.26.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-nottingham-public-resolver-errors-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.24.0
-    Python 3.12.7
+  xml2rfc 3.26.0
+    Python 3.12.8
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
-    Jinja2 3.1.4
+    Jinja2 3.1.5
     lxml 5.3.0
     platformdirs 4.3.6
-    pycountry 22.3.5
-    PyYAML 6.0.1
+    pycountry 24.6.1
+    PyYAML 6.0.2
     requests 2.32.3
     setuptools 70.3.0
     wcwidth 0.2.13
@@ -278,6 +278,12 @@ body {
 }
 
 /* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-title);
   font-weight: 680;
@@ -309,6 +315,7 @@ h4, h5, h6 {
 /* general structure */
 .author {
   padding-bottom: 0.3em;
+  vertical-align: top;
 }
 #abstract+p {
   font-size: 18px;
@@ -386,25 +393,26 @@ svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
 ol, ul {
   padding: 0;
   margin: 0 0 0.5em 2em;
-}
-:is(ol, ul) :is(ol, ul) {
-  margin-left: 1em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
 }
 li {
   margin: 0 0 0.25em 0;
 }
-.ulCompact li {
-  margin: 0;
-}
 ul.empty, .ulEmpty {
   list-style-type: none;
-}
-ul.empty li, .ulEmpty li {
-  margin-top: 0.5em;
+  & li {
+    margin-top: 0.5em;
+  }
 }
 :is(ul, ol).compact, .ulCompact, .olCompact {
-  line-height: 1;
   margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
 }
 
 /* definition lists */
@@ -412,38 +420,39 @@ dl {
   clear: left;
   --indent: 3ch;
   /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+    }
+  }
+  &.olPercent > dt {
+    float: none;
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
 }
-dl.olPercent {
-  --indent: 5ch;
-}
-dl > dt {
+dl:not(.dlNewline) > dt {
   float: left;
   margin-right: 2ch;
   min-width: 8ch;
-}
-dl.dlNewline > dt {
-  float: none;
 }
 dl > dd {
   margin-bottom: .8em;
   margin-left: var(--indent) !important; /* stupid element overrides */
   min-height: 2ex;
 }
-dl.olPercent > dt {
-  min-width: calc(var(--indent) - 2ch);
-}
 :is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0;
-}
-:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
-  margin-top: 0;
-}
-:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
-  margin-bottom: 0;
-}
-dl > dd > dl {
-  margin-top: 0.5em;
-  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
 }
 :is(dd, span).break {
   display: none;
@@ -507,6 +516,7 @@ figcaption, caption {
   font-style: italic;
   margin: 0.5em 1.5em;
   text-align: left;
+  caption-side: bottom;
 }
 @media screen {
   /* Auto-collapse boilerplate. */
@@ -524,7 +534,11 @@ figcaption, caption {
   }
   pre, svg {
     display: inline-block;
-    overflow-x: auto;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
   }
   pre {
     max-width: 100%;
@@ -561,6 +575,7 @@ cite {
 
 /* tables */
 table {
+  width: auto;
   max-width: 100%;
   margin: 0 0 1em;
   border-collapse: collapse;
@@ -575,6 +590,16 @@ table.center {
 table.left {
   margin-right: auto;
 }
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
 thead, tbody {
   border: 1px solid var(--line-color);
 }
@@ -605,9 +630,11 @@ a.pilcrow {
   margin-left: 3px;
   opacity: 0.2;
   user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
 }
-a.pilcrow[href] { color: var(--pilcrow-weak); }
-a.pilcrow[href]:hover { text-decoration: none; }
 @media not print {
   :hover > a.pilcrow {
     opacity: 1;
@@ -647,26 +674,28 @@ sub, sup {
   font-size: var(--small-font-size);
   line-height: 18px;
   --identifier-width: 15ch;
-}
-#identifiers dt {
-  width: var(--identifier-width);
-  min-width: var(--identifier-width);
-  clear: left;
-  float: left;
-  text-align: right;
-  margin-right: 1ch;
-}
-#identifiers dd {
-  margin: 0;
-  margin-left: calc(1em + var(--identifier-width)) !important;
-  min-width: 5em;
-}
-#identifiers .authors .author {
-  display: inline-block;
-  margin-right: 1.5em;
-}
-#identifiers .authors .org {
-  font-style: italic;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
 }
 
 /* The prepared/rendered info at the very bottom of the page */
@@ -677,9 +706,6 @@ sub, sup {
   margin-top: 2em;
 }
 .docInfo .prepared {
-  float: left;
-}
-.docInfo .prepared {
   float: right;
 }
 
@@ -687,53 +713,48 @@ sub, sup {
 #toc {
   padding: 0.75em 0 2em 0;
   margin-bottom: 1em;
-}
-@media screen {
-  #toc nav {
-    font-family: var(--font-title);
-    font-weight: 360;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
   }
 }
-#toc nav ul {
-  margin: 0 0.5em 0 0;
-  padding: 0;
-  list-style: none;
-}
-#toc nav li {
-  line-height: 1.3em;
-  margin: 2px 0;
-  padding-left: 1.2em;
-  text-indent: -1.2em;
-}
-#toc a.xref {
-  white-space: normal;
-}
-/* references */
-.references dt {
-  text-align: right;
-  font-weight: bold;
-  min-width: 10ch;
-  margin-right: 1.5ch;
-}
-.references dt:target::before {
-  content: "⇒";
-  width: 15px;
-  margin: 0 10px 0 -25px;
-}
-.references dd {
-  margin-left: 12ch !important;
-  overflow: auto;
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
 }
 
-.refInstance {
-  margin-bottom: 1.25em;
-}
-
-.references .ascii {
-  margin-bottom: 0.25em;
-}
-
-/* index */
 #rfc\.index\.index + ul {
   margin-left: 0;
 }
@@ -741,21 +762,33 @@ sub, sup {
 /* authors */
 address.vcard {
   font-style: normal;
-  margin: 1em 0;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
 }
-address.vcard .nameRole {
-  font-weight: 700;
-  margin-left: 0;
-}
-address.vcard .label {
-  margin: 0.5em 0;
-}
-address.vcard .type {
-  display: none;
-}
-.alternative-contact {
-  margin: 1.5em 0 1em;
-}
+
 hr.addr {
   border-top: 1px dashed;
   margin: 0;
@@ -777,6 +810,7 @@ hr.addr {
   }
 }
 
+/* Comments */
 .rfcEditorRemove p:first-of-type {
   font-style: italic;
 }
@@ -787,7 +821,31 @@ hr.addr {
 .crefSource {
   font-style: italic;
 }
-/* alternative layout for smaller screens */
+
+@media screen {
+  #toc nav {
+    font-family: var(--font-title);
+    font-weight: 360;
+    & > ul { margin-bottom: 2em; }
+    & ul {
+      margin: 0 0 0 4px;
+      & :is(p, li) {
+        margin: 2px 0;
+      }
+    }
+  }
+  #toc a.toplink {
+    float: right;
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
 @media screen and (max-width: 929px) {
   #toc {
     position: fixed;
@@ -798,9 +856,6 @@ hr.addr {
     margin: 0;
     border-bottom: 1px solid #ccc;
     opacity: 0.6;
-  }
-  #toc.active {
-      opacity: 1;
   }
   #toc h2 {
     margin: 0;
@@ -813,17 +868,17 @@ hr.addr {
     background-color: #444;
     color: white;
     cursor: pointer;
-  }
-  #toc h2::before { /* css hamburger */
-    float: right;
-    position: relative;
-    width: 1em;
-    height: 1px;
-    left: -164px;
-    margin: 8px 0 0 0;
-    background: white none repeat scroll 0 0;
-    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
-    content: "";
+    &::before { /* css hamburger */
+      float: right;
+      position: relative;
+      width: 1em;
+      height: 1px;
+      left: -164px;
+      margin: 8px 0 0 0;
+      background: white none repeat scroll 0 0;
+      box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+      content: "";
+    }
   }
   #toc nav {
     display: none;
@@ -834,14 +889,13 @@ hr.addr {
     height: calc(100vh - 48px);
     border-left: 1px solid #ddd;
   }
-  #toc.active nav {
-    display: block;
+  #toc.active {
+    opacity: 1;
+    & nav { display: block; }
   }
   /* Make the collapsed ToC header render white on gray also when it's a link */
   #toc h2 a,
-  #toc h2 a:link,
-  #toc h2 a:focus,
-  #toc h2 a:hover,
+  #toc h2 a:is(:link, :focus, :hover),
   #toc a.toplink,
   #toc a.toplink:hover {
     color: white;
@@ -849,11 +903,11 @@ hr.addr {
     text-decoration: none;
   }
   #toc a.toplink {
-    margin-top: 2px;
+    margin: 2px 0.5em 0;
   }
 }
 
-/* alternative layout for wide screens */
+/* TOC layout for wide screens */
 @media screen and (min-width: 930px) {
   body {
     padding-right: 360px;
@@ -882,20 +936,12 @@ hr.addr {
     overscroll-behavior: contain;
     scrollbar-width: thin;
   }
-  #toc nav > ul  {
-    margin-bottom: 2em;
-  }
-  #toc ul {
-    margin: 0 0 0 4px;
-    font-size: var(--small-font-size);
-  }
-  #toc ul :is(p, li) {
-    margin: 2px 0;
-    line-height: 22px;
-  }
   img { /* future proofing */
     max-width: 100%;
     height: auto;
+  }
+  #toc a.toplink {
+    margin: 8px 0.5em 0;
   }
 }
 
@@ -938,9 +984,6 @@ hr.addr {
   td {
     border-top: 1px solid #ddd;
   }
-  .toplink {
-    display: none;
-  }
 }
 
 @page :first {
@@ -963,82 +1006,6 @@ hr.addr {
   size: A4;
   margin-bottom: 45mm;
   padding-top: 20px;
-}
-
-/* Changes introduced to fix issues found during implementation */
-
-/* Separate body from document info even without intervening H1 */
-section {
-  clear: both;
-}
-
-/* Top align author divs, to avoid names without organization dropping level with org names */
-.author {
-  vertical-align: top;
-}
-
-/* Style section numbers with more space between number and title */
-.section-number {
-  padding-right: 0.5em;
-}
-
-/* Add styling for a link in the ToC that points to the top of the document */
-a.toplink {
-  float: right;
-  margin: 8px 0.5em 0;
-}
-
-/* Provide styling for table cell text alignment */
-table .text-left {
-  text-align: left;
-}
-table .text-center {
-  text-align: center;
-}
-table .text-right {
-  text-align: right;
-}
-
-/* Make the alternative author contact information look less like just another
-   author, and group it closer with the primary author contact information */
-.alternative-contact {
-  margin: 0.5em 0 0.25em 0;
-}
-address .non-ascii {
-  margin: 0 0 0 2em;
-}
-
-/* With it being possible to set tables with alignment
-  left, center, and right, { width: 100%; } does not make sense */
-table {
-  width: auto;
-}
-
-/* Avoid reference text that sits in a block with very wide left margin,
-   because of a long floating dt label.*/
-.references dd {
-  overflow: visible;
-}
-
-/* Control caption placement */
-caption {
-  caption-side: bottom;
-}
-
-/* Limit the width of the author address vcard, so names in right-to-left
-   script don't end up on the other side of the page. */
-
-address.vcard {
-  max-width: 20em;
-  margin-right: auto;
-}
-
-/* For address alignment dependent on LTR or RTL scripts */
-address div.left {
-  text-align: left;
-}
-address div.right {
-  text-align: right;
 }
 
 /* Dark mode. */
@@ -1076,12 +1043,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">Extensions for DNS Public Resolvers</td>
-<td class="right">November 2024</td>
+<td class="center">DNS Filtering Details for Applications</td>
+<td class="right">February 2025</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Nottingham</td>
-<td class="center">Expires 9 May 2025</td>
+<td class="center">Expires 21 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1094,12 +1061,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-nottingham-public-resolver-errors-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-11-05" class="published">5 November 2024</time>
+<time datetime="2025-02-17" class="published">17 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-05-09">9 May 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-21">21 August 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1109,10 +1076,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </dd>
 </dl>
 </div>
-<h1 id="title">Extensions for DNS Public Resolvers</h1>
+<h1 id="title">DNS Filtering Details for Applications</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1"><span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span> introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1"><span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span> introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents to their users.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1141,7 +1108,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 9 May 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 21 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1150,7 +1117,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
         </h2>
 <p id="section-boilerplate.2-1">
-            Copyright (c) 2024 IETF Trust and the persons identified as the
+            Copyright (c) 2025 IETF Trust and the persons identified as the
             document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.2-2">
             This document is subject to BCP 78 and the IETF Trust's Legal
@@ -1174,41 +1141,47 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
-                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-notational-conventions" class="internal xref">Notational Conventions</a></p>
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-example" class="internal xref">Example</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-notational-conventions" class="internal xref">Notational Conventions</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-dns-resolver-operator-id" class="internal xref">DNS Resolver Operator ID</a></p>
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-data-types" class="internal xref">Data Types</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-filtering-incident-id" class="internal xref">Filtering Incident ID</a></p>
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-dns-resolver-operator-id" class="internal xref">DNS Resolver Operator ID</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-incident-resolution-templat" class="internal xref">Incident Resolution Templates</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-filtering-incident-id" class="internal xref">Filtering Incident ID</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-the-filtering-incident-desc" class="internal xref">The Filtering Incident Description Format</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-incident-resolution-templat" class="internal xref">Incident Resolution Templates</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-extra-text-json-names" class="internal xref">EXTRA-TEXT JSON Names</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-the-filtering-incident-deta" class="internal xref">The Filtering Incident Details Format</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
-                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-the-dns-resolver-identifier" class="internal xref">The DNS Resolver Identifier Registry</a></p>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-extra-text-json-names" class="internal xref">EXTRA-TEXT JSON Names</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-the-dns-resolver-identifier" class="internal xref">The DNS Resolver Identifier Registry</a></p>
 </li>
             </ul>
 </li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
-</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1219,181 +1192,233 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1"><span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span> introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">These additions are informed by specific concerns that Web browsers have about providing information about DNS filtering events to end users. In particular, they are intended to address the risks associated with trusting information inserted by DNS resolvers into responses. Presenting information sourced from unauthenticated network elements to end users opens a variety of attacks. Given the variety of network deployments on the Internet, such information needs to be considered as attacker-controlled.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">This proposal mitigates these risks by minimising the amount and type of information carried into the DNS response to a "DNS Resolver Operator ID" and a "Filtering Incident ID." Neither is presented to end users: instead, they can be used to obtain (using HTTPS) a document that carries details of the specific filtering incident, for presentation to end users.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">This mechanism is not intended to scale to large numbers of DNS operators. Instead, it is expected that in typical use, the DNS Resolver Operator ID will be used to selectively present information from DNS resolvers operators that clients deem to be serving a public good role (e.g., publicly available open resolvers), to aid those parties in serving the public interest by making their operation more transparent.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<div id="notational-conventions">
+<p id="section-1-1">Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This draft defines a mechanism to communicate such details when DNS resolver filtering of a name is legally mandated, based upon the structured error data for DNS responses introduced by <span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Allowing DNS resolvers to inject user-visible messages brings unique challenges. Because DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">Furthermore, lowering the barrier to the presentation of messages explaining why access has been denied by the DNS resolver risks encouraging the wider deployment of DNS-based censorship on the Internet.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">This draft attempts to mitigate these risks by minimising the information carried in the DNS response to abstract, publicly registered identifiers -- the DNS Resolver Operator ID and the Filtering Incident ID. A consuming party (e.g., a Web browser) can selectively present messages from those operators that they believe to be using this mechanism for its stated goal -- in particular, those who using it to surface policy-driven filtering, rather than enact discretionary censorship or attack end users.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<div id="example">
 <section id="section-1.1">
-        <h3 id="name-notational-conventions">
-<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        <h3 id="name-example">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-example" class="section-name selfRef">Example</a>
         </h3>
-<p id="section-1.1-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
-"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
-described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
-appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">In typical use, a DNS query that is filtered might contain an Extended DNS Error with an EXTRA-TEXT field containing:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-1.1-2">
+<pre>
+{
+  "ro": "exampleResolver",
+  "inc": "abc123"
+}
+</pre><a href="#section-1.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1-3">This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+<p id="section-1.1-4">An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {registry}) and obtain the corresponding template (see {template}). For example:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1-5">
+<pre>
+https://resolver.example.com/filtering-incidents/{inc}
+</pre><a href="#section-1.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1-6">That template can be expanded using the value of "inc" to:<a href="#section-1.1-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.1-7">
+<pre>
+https://resolver.example.com/filtering-incidents/abc123
+</pre><a href="#section-1.1-7" class="pilcrow">¶</a>
+</div>
+<p id="section-1.1-8">from which a document (in the format described in {format}) explaining the details of the filtering incident can be retrieved:<a href="#section-1.1-8" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-1.1-9">
+<pre>
+{
+  "inc": "abc123",
+  "resolver": "The Example DNS Resolver Operator",
+  "authority": "High Court of Fictitious Jurisdiction",
+  "description": "Access blocked by Commonwealth v Doe (2025)"
+}
+</pre><a href="#section-1.1-9" class="pilcrow">¶</a>
+</div>
 </section>
 </div>
+<div id="notational-conventions">
+<section id="section-1.2">
+        <h3 id="name-notational-conventions">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-notational-conventions" class="section-name selfRef">Notational Conventions</a>
+        </h3>
+<p id="section-1.2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="data-types">
+<section id="section-2">
+      <h2 id="name-data-types">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-data-types" class="section-name selfRef">Data Types</a>
+      </h2>
+<p id="section-2-1">This section defines the data types used in this mechanism.<a href="#section-2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="op-id">
-<section id="section-2">
+<section id="section-3">
       <h2 id="name-dns-resolver-operator-id">
-<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-dns-resolver-operator-id" class="section-name selfRef">DNS Resolver Operator ID</a>
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-dns-resolver-operator-id" class="section-name selfRef">DNS Resolver Operator ID</a>
       </h2>
-<p id="section-2-1">A DNS Resolver Operator ID is a short, textual string that uniquely identifies the operator of a DNS resolver. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "ro". For example:<a href="#section-2-1" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-2-2">
+<p id="section-3-1">A DNS Resolver Operator ID is a short, textual string that uniquely identifies the operator of a DNS resolver. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "ro". For example:<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-3-2">
 <pre>
 {
   "ro": "exampleResolver"
 }
-</pre><a href="#section-2-2" class="pilcrow">¶</a>
+</pre><a href="#section-3-2" class="pilcrow">¶</a>
 </div>
-<p id="section-2-3">The value of the "ro" field <span class="bcp14">MUST</span> be registered in the DNS Resolver Operator registry; see <a href="#registry" class="auto internal xref">Section 6.2</a>. Unregistered values <span class="bcp14">MUST</span> be ignored, and registered values <span class="bcp14">MAY</span> be ignored.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-3-3">Generators <span class="bcp14">MUST</span> only use values that are registered in the DNS Resolver Operator registry; see <a href="#registry" class="auto internal xref">Section 7.2</a>. Consumers <span class="bcp14">MUST</span> ignore unregistered values, and <span class="bcp14">MAY</span> ignore registered values.<a href="#section-3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="incident-id">
-<section id="section-3">
+<section id="section-4">
       <h2 id="name-filtering-incident-id">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-filtering-incident-id" class="section-name selfRef">Filtering Incident ID</a>
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-filtering-incident-id" class="section-name selfRef">Filtering Incident ID</a>
       </h2>
-<p id="section-3-1">A Filtering Incident ID is an opaque, string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "inc". For example:<a href="#section-3-1" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-3-2">
+<p id="section-4-1">A Filtering Incident ID is an opaque, string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "inc". For example:<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div class="lang-json sourcecode" id="section-4-2">
 <pre>
 {
   "inc": "abc123"
 }
-</pre><a href="#section-3-2" class="pilcrow">¶</a>
+</pre><a href="#section-4-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
 <div id="template">
-<section id="section-4">
+<section id="section-5">
       <h2 id="name-incident-resolution-templat">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-incident-resolution-templat" class="section-name selfRef">Incident Resolution Templates</a>
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-incident-resolution-templat" class="section-name selfRef">Incident Resolution Templates</a>
       </h2>
-<p id="section-4-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Description document (see <a href="#format" class="auto internal xref">Section 5</a>).<a href="#section-4-1" class="pilcrow">¶</a></p>
-<p id="section-4-2">It <span class="bcp14">MUST</span> be a Level 1 or Level 2 template (see <span><a href="https://rfc-editor.org/rfc/rfc6570#section-1.2" class="relref">Section 1.2</a> of [<a href="#RFC6570" class="cite xref">RFC6570</a>]</span>). It has the following variables available to it:<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-5-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see <a href="#format" class="auto internal xref">Section 6</a>).<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">It <span class="bcp14">MUST</span> be a Level 1 or Level 2 template (see <span><a href="https://rfc-editor.org/rfc/rfc6570#section-1.2" class="relref">Section 1.2</a> of [<a href="#RFC6570" class="cite xref">RFC6570</a>]</span>). It has the following variables available to it:<a href="#section-5-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-4-3.1">
-          <p id="section-4-3.1.1">ro: the DNS Resolver Operator ID (see {op-id})<a href="#section-4-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5-3.1">
+          <p id="section-5-3.1.1">ro: the DNS Resolver Operator ID (see {op-id})<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-4-3.2">
-          <p id="section-4-3.2.1">inc: the Filtering Incident ID (see {incident-id})<a href="#section-4-3.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-5-3.2">
+          <p id="section-5-3.2.1">inc: the Filtering Incident ID (see {incident-id})<a href="#section-5-3.2.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-4-4">For example:<a href="#section-4-4" class="pilcrow">¶</a></p>
-<p id="section-4-5">~~
+<p id="section-5-4">For example:<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">~~
 https://resolver.example.com/filtering-incidents/{inc}
-~~<a href="#section-4-5" class="pilcrow">¶</a></p>
-<p id="section-4-6">When dereferencing this URL, HTTP content negotiation for language <span class="bcp14">SHOULD</span> be used; see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-12" class="relref">Section 12</a> of [<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>.<a href="#section-4-6" class="pilcrow">¶</a></p>
+~~<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">When dereferencing this URL, HTTP content negotiation for language <span class="bcp14">SHOULD</span> be used; see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-12" class="relref">Section 12</a> of [<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>.<a href="#section-5-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="format">
-<section id="section-5">
-      <h2 id="name-the-filtering-incident-desc">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-the-filtering-incident-desc" class="section-name selfRef">The Filtering Incident Description Format</a>
+<section id="section-6">
+      <h2 id="name-the-filtering-incident-deta">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-the-filtering-incident-deta" class="section-name selfRef">The Filtering Incident Details Format</a>
       </h2>
-<p id="section-5-1">The Filtering Incident Description Format is a JSON <span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span> document format for returning information about a particular filtering incident. Its root is an Object, with the following members:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-6-1">The Filtering Incident Details Format is a JSON <span>[<a href="#RFC8259" class="cite xref">RFC8259</a>]</span> document format for returning information about a particular filtering incident. Its root is an Object, with the following members:<a href="#section-6-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5-2.1">
-          <p id="section-5-2.1.1">inc: String; the Filtering Incident ID<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-6-2.1">
+          <p id="section-6-2.1.1">inc: String; the Filtering Incident ID<a href="#section-6-2.1.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.2">
-          <p id="section-5-2.2.1">resolver: String; a short textual name for the resolver operator (<span class="bcp14">RECOMMENDED</span> to be no longer than 64 characters)<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.2">
+          <p id="section-6-2.2.1">resolver: String; a short textual name for the resolver operator (<span class="bcp14">RECOMMENDED</span> to be no longer than 64 characters)<a href="#section-6-2.2.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.3">
-          <p id="section-5-2.3.1">authority: String; a short textual name for the authority that required the filtering (<span class="bcp14">RECOMMENDED</span> to be no longer than 64 characters)<a href="#section-5-2.3.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.3">
+          <p id="section-6-2.3.1">authority: String; a short textual name for the authority that required the filtering (<span class="bcp14">RECOMMENDED</span> to be no longer than 64 characters)<a href="#section-6-2.3.1" class="pilcrow">¶</a></p>
 </li>
-        <li class="normal" id="section-5-2.4">
-          <p id="section-5-2.4.1">description: String; a short textual description of the incident (<span class="bcp14">RECOMMENDED</span> to be no longer than 256 characters)<a href="#section-5-2.4.1" class="pilcrow">¶</a></p>
+        <li class="normal" id="section-6-2.4">
+          <p id="section-6-2.4.1">description: String; a short textual description of the incident (<span class="bcp14">RECOMMENDED</span> to be no longer than 256 characters)<a href="#section-6-2.4.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
-<p id="section-5-3">All members above are mandatory. New members can be added by updating this specification.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-6-3">All members above are mandatory. New members can be added by updating this specification.<a href="#section-6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-6">
+<section id="section-7">
       <h2 id="name-iana-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <div id="extra-text-json-names">
-<section id="section-6.1">
+<section id="section-7.1">
         <h3 id="name-extra-text-json-names">
-<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-extra-text-json-names" class="section-name selfRef">EXTRA-TEXT JSON Names</a>
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-extra-text-json-names" class="section-name selfRef">EXTRA-TEXT JSON Names</a>
         </h3>
-<p id="section-6.1-1">IANA will register the following fields in the "EXTRA-TEXT JSON Names" sub-registry established by <span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span>:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-1">IANA will register the following fields in the "EXTRA-TEXT JSON Names" sub-registry established by <span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span>:<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.1-2.1">
-            <p id="section-6.1-2.1.1">JSON Name: "ro"<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.1-2.1">
+            <p id="section-7.1-2.1.1">JSON Name: "ro"<a href="#section-7.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.2">
-            <p id="section-6.1-2.2.1">Short Description: a short, textual string that uniquely identifies the operator of a DNS resolver<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.2">
+            <p id="section-7.1-2.2.1">Short Description: a short, textual string that uniquely identifies the operator of a DNS resolver<a href="#section-7.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.3">
-            <p id="section-6.1-2.3.1">Mandatory: no<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.3">
+            <p id="section-7.1-2.3.1">Mandatory: no<a href="#section-7.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.4">
-            <p id="section-6.1-2.4.1">Specification: [this document]<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.4">
+            <p id="section-7.1-2.4.1">Specification: [this document]<a href="#section-7.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.5">
-            <p id="section-6.1-2.5.1">JSON Name: "inc"<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.5">
+            <p id="section-7.1-2.5.1">JSON Name: "inc"<a href="#section-7.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.6">
-            <p id="section-6.1-2.6.1">Short Description: an opaque, string identifier for a particular filtering incident<a href="#section-6.1-2.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.6">
+            <p id="section-7.1-2.6.1">Short Description: an opaque, string identifier for a particular filtering incident<a href="#section-7.1-2.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.7">
-            <p id="section-6.1-2.7.1">Mandatory: no<a href="#section-6.1-2.7.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.7">
+            <p id="section-7.1-2.7.1">Mandatory: no<a href="#section-7.1-2.7.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.1-2.8">
-            <p id="section-6.1-2.8.1">Specification: [this document]<a href="#section-6.1-2.8.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.1-2.8">
+            <p id="section-7.1-2.8.1">Specification: [this document]<a href="#section-7.1-2.8.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
 <div id="registry">
-<section id="section-6.2">
+<section id="section-7.2">
         <h3 id="name-the-dns-resolver-identifier">
-<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-the-dns-resolver-identifier" class="section-name selfRef">The DNS Resolver Identifier Registry</a>
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-the-dns-resolver-identifier" class="section-name selfRef">The DNS Resolver Identifier Registry</a>
         </h3>
-<p id="section-6.2-1">IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that are deemed to be deceptive or spurious.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
-<p id="section-6.2-2">It contains the following fields:<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-7.2-1">IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<p id="section-7.2-2">It contains the following fields:<a href="#section-7.2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-6.2-3.1">
-            <p id="section-6.2-3.1.1">Name: The name of the DNS resolver operator<a href="#section-6.2-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-7.2-3.1">
+            <p id="section-7.2-3.1.1">Name: The name of the DNS resolver operator<a href="#section-7.2-3.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-3.2">
-            <p id="section-6.2-3.2.1">Contact: an e-mail address or other appropriate contact mechanism<a href="#section-6.2-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.2-3.2">
+            <p id="section-7.2-3.2.1">Contact: an e-mail address or other appropriate contact mechanism<a href="#section-7.2-3.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-3.3">
-            <p id="section-6.2-3.3.1">DNS Resolver Operator ID: see <a href="#op-id" class="auto internal xref">Section 2</a><a href="#section-6.2-3.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.2-3.3">
+            <p id="section-7.2-3.3.1">DNS Resolver Operator ID: see <a href="#op-id" class="auto internal xref">Section 3</a><a href="#section-7.2-3.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-6.2-3.4">
-            <p id="section-6.2-3.4.1">Incident Resolution Template: see <a href="#template" class="auto internal xref">Section 4</a><a href="#section-6.2-3.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-7.2-3.4">
+            <p id="section-7.2-3.4.1">Incident Resolution Template: see <a href="#template" class="auto internal xref">Section 5</a><a href="#section-7.2-3.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
+<p id="section-7.2-4">The Incident Resolution Template can be updated by the contact at any time. However, operators <span class="bcp14">SHOULD</span> accommodate potentially long lag times for applications to update their copies of the registry.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-7">
+<section id="section-8">
       <h2 id="name-security-considerations">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-7-1">This specification does not provide a way to authenticate that a particular filtering incident as experienced by a client was actually associated with the DNS resolver operator claimed. This means that an attacker (for example, one controlling a DNS resolver) can claim that a filtering incident is associated with an operator when it in fact was not.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">However, to be successful an attacker would need to reuse an existing incident identifier that is supported by a DNS resolver operator recognised by the client. It is not currently thought to be particularly advantageous to an attacker to do so.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-8-1">This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the identified DNS resolver operator. This means that an attacker (for example, one controlling a DNS resolver) can claim that a filtering incident is associated with an operator when it in fact was not. However, a successful attack would need to reuse an existing incident identifier that is supported by a DNS resolver operator recognised by the application. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">The payload of the Filtering Incident Details document (<a href="#format" class="auto internal xref">Section 6</a>) is specified to contain only textual strings. If an application interprets these values -- for example, by parsing them for HTML or similar markup -- new attacks may be possible.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.<a href="#section-8-3" class="pilcrow">¶</a></p>
+<p id="section-8-4">Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which operators' error messages they display to users. This decision might be influenced by the identity of the resolver (e.g., so-called "public resolvers" are likely to use this mechanism responsibly), its history (e.g., a well-known Internet Service Provider that has been subject to legal filtering orders), or local configuration (e.g., application or operating system settings that indicate that a particular resolver is to be trusted).<a href="#section-8-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-normative-references">
-<section id="section-8">
+<section id="section-9">
       <h2 id="name-normative-references">
-<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
       </h2>
 <dl class="references">
 <dt id="I-D.ietf-dnsop-structured-dns-error">[I-D.ietf-dnsop-structured-dns-error]</dt>
       <dd>
-<span class="refAuthor">Wing, D.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Cook, N.</span>, and <span class="refAuthor">M. Boucadair</span>, <span class="refTitle">"Structured Error Data for Filtered DNS"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-dnsop-structured-dns-error-09</span>, <time datetime="2024-07-28" class="refDate">28 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-structured-dns-error-09">https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-structured-dns-error-09</a>&gt;</span>. </dd>
+<span class="refAuthor">Wing, D.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Cook, N.</span>, and <span class="refAuthor">M. Boucadair</span>, <span class="refTitle">"Structured Error Data for Filtered DNS"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-dnsop-structured-dns-error-10</span>, <time datetime="2024-11-26" class="refDate">26 November 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-structured-dns-error-10">https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-structured-dns-error-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
       <dd>
