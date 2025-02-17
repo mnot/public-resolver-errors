@@ -1237,6 +1237,7 @@ Accept-Language: en
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Language: en
+Cache-Control: max-age=3600
 
 {
   "inc": "abc123",
@@ -1311,7 +1312,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
       <h2 id="name-incident-resolution-templat">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-incident-resolution-templat" class="section-name selfRef">Incident Resolution Templates</a>
       </h2>
-<p id="section-5-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see <a href="#format" class="auto internal xref">Section 6</a>).<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> contained in the DNS Resolver Identifier Registry (<a href="#registry" class="auto internal xref">Section 7.2</a>) that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see <a href="#format" class="auto internal xref">Section 6</a>).<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">It <span class="bcp14">MUST</span> be a Level 1 or Level 2 template (see <span><a href="https://rfc-editor.org/rfc/rfc6570#section-1.2" class="relref">Section 1.2</a> of [<a href="#RFC6570" class="cite xref">RFC6570</a>]</span>). It has the following variables available to it:<a href="#section-5-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-5-3">
         <dt id="section-5-3.1">ro:</dt>
@@ -1332,6 +1333,7 @@ https://resolver.example.com/filtering-incidents/{inc}
 </pre><a href="#section-5-5" class="pilcrow">¶</a>
 </div>
 <p id="section-5-6">When dereferencing this URL, HTTP content negotiation for language <span class="bcp14">SHOULD</span> be used; see <span><a href="https://rfc-editor.org/rfc/rfc9110#section-12" class="relref">Section 12</a> of [<a href="#RFC9110" class="cite xref">RFC9110</a>]</span>.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">Applications <span class="bcp14">MUST</span> store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they <span class="bcp14">MUST NOT</span> query the IANA registry upon each use.<a href="#section-5-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="format">
