@@ -135,8 +135,9 @@ Table of Contents
 
    https://resolver.example.com/filtering-incidents/abc123
 
-   from which a document (in the format described in Section 6)
-   explaining the details of the filtering incident can be retrieved:
+   from which the application can retrieve a document (in the format
+   described in Section 6) explaining the details of the filtering
+   incident (in this case, for an English-speaking user):
 
    GET /filtering-incidents/abc123 HTTP/1.1
    Host: resolver.example.com
@@ -148,10 +149,18 @@ Table of Contents
 
    {
      "inc": "abc123",
-     "resolver": "The Example DNS Resolver Operator",
+     "resolver": "Example DNS Resolver Operator",
      "authority": "High Court of Fictitious Jurisdiction",
      "description": "Access blocked by Commonwealth v Doe (2025)"
    }
+
+   The application could (but might not) then decide to convey some or
+   all of this information to its user; for example, with a statement
+   that conveys:
+
+      Example DNS Resolver Operator says that High Court of Fictitious
+      Jurisdiction has caused this page to be filtered for the following
+      reason: "Access blocked by Commonwealth v Doe (2025)"
 
 1.2.  Notational Conventions
 

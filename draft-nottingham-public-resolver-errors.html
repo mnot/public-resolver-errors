@@ -1224,7 +1224,7 @@ https://resolver.example.com/filtering-incidents/{inc}
 https://resolver.example.com/filtering-incidents/abc123
 </pre><a href="#section-1.1-7" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-8">from which a document (in the format described in <a href="#format" class="auto internal xref">Section 6</a>) explaining the details of the filtering incident can be retrieved:<a href="#section-1.1-8" class="pilcrow">¶</a></p>
+<p id="section-1.1-8">from which the application can retrieve a document (in the format described in <a href="#format" class="auto internal xref">Section 6</a>) explaining the details of the filtering incident (in this case, for an English-speaking user):<a href="#section-1.1-8" class="pilcrow">¶</a></p>
 <div class="lang-http-message sourcecode" id="section-1.1-9">
 <pre>
 GET /filtering-incidents/abc123 HTTP/1.1
@@ -1240,12 +1240,18 @@ Content-Language: en
 
 {
   "inc": "abc123",
-  "resolver": "The Example DNS Resolver Operator",
+  "resolver": "Example DNS Resolver Operator",
   "authority": "High Court of Fictitious Jurisdiction",
   "description": "Access blocked by Commonwealth v Doe (2025)"
 }
 </pre><a href="#section-1.1-10" class="pilcrow">¶</a>
 </div>
+<p id="section-1.1-11">The application could (but might not) then decide to convey some or all of this information to its user; for example, with a statement that conveys:<a href="#section-1.1-11" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-1.1-12.1">
+            <p id="section-1.1-12.1.1">Example DNS Resolver Operator says that High Court of Fictitious Jurisdiction has caused this page to be filtered for the following reason: "Access blocked by Commonwealth v Doe (2025)"<a href="#section-1.1-12.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 <div id="notational-conventions">
