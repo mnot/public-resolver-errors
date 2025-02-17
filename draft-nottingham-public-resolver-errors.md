@@ -127,7 +127,7 @@ A Filtering Incident ID is an opaque, string identifier for a particular filteri
 
 # Incident Resolution Templates {#template}
 
-An Incident Resolution Template is a URI Template {{!RFC6570}} that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see {{format}}).
+An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see {{format}}).
 
 It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables available to it:
 
@@ -144,6 +144,8 @@ https://resolver.example.com/filtering-incidents/{inc}
 ~~~
 
 When dereferencing this URL, HTTP content negotiation for language SHOULD be used; see {{Section 12 of !RFC9110}}.
+
+Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use.
 
 # The Filtering Incident Details Format {#format}
 
