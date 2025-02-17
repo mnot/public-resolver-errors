@@ -144,15 +144,32 @@ All members above are mandatory. New members can be added by updating this speci
 
 IANA will register the following fields in the "EXTRA-TEXT JSON Names" sub-registry established by {{I-D.ietf-dnsop-structured-dns-error}}:
 
-* JSON Name: "ro"
-* Short Description: a short, textual string that uniquely identifies the operator of a DNS resolver
-* Mandatory: no
-* Specification: [this document]
+JSON Name: 
+: "ro"
 
-* JSON Name: "inc"
-* Short Description: an opaque, string identifier for a particular filtering incident
-* Mandatory: no
-* Specification: [this document]
+Short Description:
+: a short, textual string that uniquely identifies the operator of a DNS resolver
+
+Mandatory: 
+: no
+
+Specification: 
+: this document
+{: spacing="compact"} 
+
+
+JSON Name: 
+: "inc"
+
+Short Description:
+: an opaque, string identifier for a particular filtering incident
+
+Mandatory: 
+: no
+
+Specification: 
+: this document
+{: spacing="compact"} 
 
 ## The DNS Resolver Identifier Registry {#registry}
 
@@ -160,10 +177,17 @@ IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its 
 
 It contains the following fields:
 
-* Name: The name of the DNS resolver operator
-* Contact: an e-mail address or other appropriate contact mechanism
-* DNS Resolver Operator ID: see {{op-id}}
-* Incident Resolution Template: see {{template}}
+Name:
+: The name of the DNS resolver operator
+
+Contact:
+: an e-mail address or other appropriate contact mechanism
+
+DNS Resolver Operator ID:
+: see {{op-id}}
+
+Incident Resolution Template:
+: see {{template}}
 
 The Incident Resolution Template can be updated by the contact at any time. However, operators SHOULD accommodate potentially long lag times for applications to update their copies of the registry.
 
