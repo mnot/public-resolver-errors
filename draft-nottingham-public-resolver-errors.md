@@ -86,7 +86,7 @@ from which a document (in the format described in {format}) explaining the detai
 
 # Data Types
 
-This section defines the data types used in this mechanism.
+This section defines the data types used to look up the details of a filtering incident from a DNS error response. Note that these identifiers are not for presentation to end users.
 
 # DNS Resolver Operator ID {#op-id}
 
