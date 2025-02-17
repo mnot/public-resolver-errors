@@ -1202,7 +1202,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         <h3 id="name-example">
 <a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-example" class="section-name selfRef">Example</a>
         </h3>
-<p id="section-1.1-1">In typical use, a DNS query that is filtered might contain an Extended DNS Error with an EXTRA-TEXT field containing:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-1">In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see <span>[<a href="#RFC8914" class="cite xref">RFC8914</a>]</span>) and an EXTRA-TEXT field containing:<a href="#section-1.1-1" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-1.1-2">
 <pre>
 {
@@ -1212,7 +1212,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </pre><a href="#section-1.1-2" class="pilcrow">¶</a>
 </div>
 <p id="section-1.1-3">This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".<a href="#section-1.1-3" class="pilcrow">¶</a></p>
-<p id="section-1.1-4">An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {registry}) and obtain the corresponding template (see {template}). For example:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
+<p id="section-1.1-4">An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see <a href="#registry" class="auto internal xref">Section 7.2</a>) and obtain the corresponding template (see <a href="#template" class="auto internal xref">Section 5</a>). For example:<a href="#section-1.1-4" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1.1-5">
 <pre>
 https://resolver.example.com/filtering-incidents/{inc}
@@ -1224,16 +1224,27 @@ https://resolver.example.com/filtering-incidents/{inc}
 https://resolver.example.com/filtering-incidents/abc123
 </pre><a href="#section-1.1-7" class="pilcrow">¶</a>
 </div>
-<p id="section-1.1-8">from which a document (in the format described in {format}) explaining the details of the filtering incident can be retrieved:<a href="#section-1.1-8" class="pilcrow">¶</a></p>
-<div class="lang-json sourcecode" id="section-1.1-9">
+<p id="section-1.1-8">from which a document (in the format described in <a href="#format" class="auto internal xref">Section 6</a>) explaining the details of the filtering incident can be retrieved:<a href="#section-1.1-8" class="pilcrow">¶</a></p>
+<div class="lang-http-message sourcecode" id="section-1.1-9">
 <pre>
+GET /filtering-incidents/abc123 HTTP/1.1
+Host: resolver.example.com
+Accept-Language: en
+</pre><a href="#section-1.1-9" class="pilcrow">¶</a>
+</div>
+<div class="lang-http-message sourcecode" id="section-1.1-10">
+<pre>
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Language: en
+
 {
   "inc": "abc123",
   "resolver": "The Example DNS Resolver Operator",
   "authority": "High Court of Fictitious Jurisdiction",
   "description": "Access blocked by Commonwealth v Doe (2025)"
 }
-</pre><a href="#section-1.1-9" class="pilcrow">¶</a>
+</pre><a href="#section-1.1-10" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -1467,6 +1478,10 @@ https://resolver.example.com/filtering-incidents/{inc}
 <dt id="RFC8259">[RFC8259]</dt>
       <dd>
 <span class="refAuthor">Bray, T., Ed.</span>, <span class="refTitle">"The JavaScript Object Notation (JSON) Data Interchange Format"</span>, <span class="seriesInfo">STD 90</span>, <span class="seriesInfo">RFC 8259</span>, <span class="seriesInfo">DOI 10.17487/RFC8259</span>, <time datetime="2017-12" class="refDate">December 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8259">https://www.rfc-editor.org/rfc/rfc8259</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8914">[RFC8914]</dt>
+      <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Hunt, E.</span>, <span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Hardaker, W.</span>, and <span class="refAuthor">D. Lawrence</span>, <span class="refTitle">"Extended DNS Errors"</span>, <span class="seriesInfo">RFC 8914</span>, <span class="seriesInfo">DOI 10.17487/RFC8914</span>, <time datetime="2020-10" class="refDate">October 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8914">https://www.rfc-editor.org/rfc/rfc8914</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9110">[RFC9110]</dt>
     <dd>
