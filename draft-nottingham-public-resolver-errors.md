@@ -103,7 +103,7 @@ The application could (but might not) then decide to convey some or all of this 
 
 This section defines the data types used to look up the details of a filtering incident from a DNS error response. Note that these identifiers are not for presentation to end users.
 
-# DNS Resolver Operator ID {#op-id}
+## DNS Resolver Operator ID {#op-id}
 
 A DNS Resolver Operator ID is a short, textual string that uniquely identifies the operator of a DNS resolver. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "ro". For example:
 
@@ -115,7 +115,7 @@ A DNS Resolver Operator ID is a short, textual string that uniquely identifies t
 
 Generators MUST only use values that are registered in the DNS Resolver Operator registry; see {{registry}}. Consumers MUST ignore unregistered values, and MAY ignore registered values.
 
-# Filtering Incident ID {#incident-id}
+## Filtering Incident ID {#incident-id}
 
 A Filtering Incident ID is an opaque, string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "inc". For example:
 
