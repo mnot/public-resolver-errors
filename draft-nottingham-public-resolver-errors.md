@@ -45,7 +45,7 @@ This draft attempts to mitigate these risks by minimising the information carrie
 
 ## Example
 
-In typical use, a DNS query that is filtered might contain an Extended DNS Error with an EXTRA-TEXT field containing:
+In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see {{!RFC8914}}) and an EXTRA-TEXT field containing:
 
 ~~~ json
 {
@@ -56,7 +56,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 
 This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".
 
-An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {registry}) and obtain the corresponding template (see {template}). For example:
+An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For example:
 
 ~~~
 https://resolver.example.com/filtering-incidents/{inc}
@@ -68,9 +68,19 @@ That template can be expanded using the value of "inc" to:
 https://resolver.example.com/filtering-incidents/abc123
 ~~~
 
-from which a document (in the format described in {format}) explaining the details of the filtering incident can be retrieved:
+from which a document (in the format described in {{format}}) explaining the details of the filtering incident can be retrieved:
 
-~~~ json
+~~~ http-message
+GET /filtering-incidents/abc123 HTTP/1.1
+Host: resolver.example.com
+Accept-Language: en
+~~~
+
+~~~ http-message
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Language: en
+
 {
   "inc": "abc123",
   "resolver": "The Example DNS Resolver Operator",
