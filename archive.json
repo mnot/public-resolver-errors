@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-16T00:31:05.007217+00:00",
+  "timestamp": "2025-02-18T00:28:06.111606+00:00",
   "repo": "mnot/public-resolver-errors",
   "labels": [
     {
@@ -49,6 +49,122 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
-  "pulls": []
+  "issues": [
+    {
+      "number": 3,
+      "id": "I_kwDONGHIuM6qR3Mr",
+      "title": "Make non-essential fields optional",
+      "url": "https://github.com/mnot/public-resolver-errors/issues/3",
+      "state": "OPEN",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The JSON makes four fields mandatory.  If the resolver operator is in the registry, then you really only need their identity (for looking up the URL template) and the incident code (to add to the resolver identity for use in the template).  The authority and description are details that can be provided at the URL.\n\nGiven that, and given the i18n shortcomings of a static JSON format, I'd suggest making the authority and description fields optional.",
+      "createdAt": "2025-02-17T05:29:29Z",
+      "updatedAt": "2025-02-17T05:29:29Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDONGHIuM6LZsNR",
+      "title": "update",
+      "url": "https://github.com/mnot/public-resolver-errors/pull/1",
+      "state": "MERGED",
+      "author": "mnot",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-17T04:49:52Z",
+      "updatedAt": "2025-02-17T10:45:21Z",
+      "baseRepository": "mnot/public-resolver-errors",
+      "baseRefName": "main",
+      "baseRefOid": "5b81519545df2c591e842d3ad5a4722d57614a25",
+      "headRepository": "mnot/public-resolver-errors",
+      "headRefName": "generalise",
+      "headRefOid": "b91f5732bd229cd50a8b42005a4551419cbfc4ae",
+      "closedAt": "2025-02-17T04:50:23Z",
+      "mergedAt": "2025-02-17T04:50:23Z",
+      "mergedBy": "mnot",
+      "mergeCommit": {
+        "oid": "14221efde67619d0948830ff5a570bae7770a03a"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDONGHIuM6cNJNj",
+          "commit": {
+            "abbreviatedOid": "b91f573"
+          },
+          "author": "Sazwan96",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-02-17T10:45:21Z",
+          "updatedAt": "2025-02-17T10:45:21Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDONGHIuM6LZ3z3",
+      "title": "moar ~",
+      "url": "https://github.com/mnot/public-resolver-errors/pull/2",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-02-17T05:27:20Z",
+      "updatedAt": "2025-02-17T05:29:07Z",
+      "baseRepository": "mnot/public-resolver-errors",
+      "baseRefName": "main",
+      "baseRefOid": "14221efde67619d0948830ff5a570bae7770a03a",
+      "headRepository": "mnot/public-resolver-errors",
+      "headRefName": "tilde-url",
+      "headRefOid": "87f1290acfec6bcd4d15aa686f3eaa3cd4f85203",
+      "closedAt": "2025-02-17T05:29:05Z",
+      "mergedAt": "2025-02-17T05:29:05Z",
+      "mergedBy": "mnot",
+      "mergeCommit": {
+        "oid": "0c07ef8bbe97bb0dfff8d58976c93658db1f809e"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDONGHIuM6LZ5r5",
+      "title": "Definition lists FTW",
+      "url": "https://github.com/mnot/public-resolver-errors/pull/4",
+      "state": "MERGED",
+      "author": "martinthomson",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "I've used a compact form for the registrations so that there is a visual separation.  Otherwise, it looks like one registration.",
+      "createdAt": "2025-02-17T05:33:50Z",
+      "updatedAt": "2025-02-17T05:48:35Z",
+      "baseRepository": "mnot/public-resolver-errors",
+      "baseRefName": "main",
+      "baseRefOid": "0c07ef8bbe97bb0dfff8d58976c93658db1f809e",
+      "headRepository": "mnot/public-resolver-errors",
+      "headRefName": "dlftw",
+      "headRefOid": "511ef3084090826d100b651e2a10ed3a4bd4b3cb",
+      "closedAt": "2025-02-17T05:48:33Z",
+      "mergedAt": "2025-02-17T05:48:33Z",
+      "mergedBy": "mnot",
+      "mergeCommit": {
+        "oid": "7efe83e58db43bc3d5ed5abfe71da671b75fed82"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
