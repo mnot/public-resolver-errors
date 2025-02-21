@@ -56,7 +56,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 
 This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".
 
-An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
+An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in a local copy of the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
 
 ~~~
 https://resolver.example.com/filtering-incidents/{inc}
@@ -68,31 +68,14 @@ That template can be expanded using the value of "inc" to:
 https://resolver.example.com/filtering-incidents/abc123
 ~~~
 
-from which the application can retrieve a document (in the format described in {{format}}) explaining the details of the filtering incident (in this case, for an English-speaking user):
-
-~~~ http-message
-GET /filtering-incidents/abc123 HTTP/1.1
-Host: resolver.example.com
-Accept-Language: en
-~~~
-
-~~~ http-message
-HTTP/1.1 200 OK
-Content-Type: application/json
-Content-Language: en
-Cache-Control: max-age=3600
-
-{
-  "inc": "abc123",
-  "resolver": "Example DNS Resolver Operator",
-  "authority": "High Court of Fictitious Jurisdiction",
-  "description": "Access blocked by Commonwealth v Doe (2025)"
-}
-~~~
 
 The application could (but might not) then decide to convey some or all of this information to its user; for example, with a statement that conveys:
 
-> Example DNS Resolver Operator says that High Court of Fictitious Jurisdiction has caused this page to be filtered for the following reason: "Access blocked by Commonwealth v Doe (2025)"
+> The webpage at www.example.net was blocked due to a legal request. Your DNS resolver may have more information about the legal request here:
+>
+> https://resolver.example.com/filtering-incidents/abc123
+
+Note that there is no requirement for the template to expand to a URL on any particular hostname; for example, it could be hosted by a party other than the resolver's server.
 
 
 ## Notational Conventions
@@ -127,7 +110,7 @@ A Filtering Incident ID is an opaque, string identifier for a particular filteri
 
 # Incident Resolution Templates {#template}
 
-An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain a Filtering Incident Details document (see {{format}}).
+An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
 
 It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables available to it:
 
@@ -143,20 +126,8 @@ For example:
 https://resolver.example.com/filtering-incidents/{inc}
 ~~~
 
-When dereferencing this URL, HTTP content negotiation for language SHOULD be used; see {{Section 12 of !RFC9110}}.
-
 Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use.
 
-# The Filtering Incident Details Format {#format}
-
-The Filtering Incident Details Format is a JSON {{!RFC8259}} document format for returning information about a particular filtering incident. Its root is an Object, with the following members:
-
-* inc: String; the Filtering Incident ID
-* resolver: String; a short textual name for the resolver operator (RECOMMENDED to be no longer than 64 characters)
-* authority: String; a short textual name for the authority that required the filtering (RECOMMENDED to be no longer than 64 characters)
-* description: String; a short textual description of the incident (RECOMMENDED to be no longer than 256 characters)
-
-All members above are mandatory. New members can be added by updating this specification.
 
 # IANA Considerations
 
@@ -214,9 +185,7 @@ The Incident Resolution Template can be updated by the contact at any time. Howe
 
 # Security Considerations
 
-This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the identified DNS resolver operator. This means that an attacker (for example, one controlling a DNS resolver) can claim that a filtering incident is associated with an operator when it in fact was not. However, a successful attack would need to reuse an existing incident identifier that is supported by a DNS resolver operator recognised by the application. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
-
-The payload of the Filtering Incident Details document ({{format}}) is specified to contain only textual strings. If an application interprets these values -- for example, by parsing them for HTML or similar markup -- new attacks may be possible.
+This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Resolver Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
 
 The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.
 
