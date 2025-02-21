@@ -192,3 +192,7 @@ The details of DNS responses are not available to all applications, depending on
 Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which operators' error messages they display to users. This decision might be influenced by the identity of the resolver (e.g., so-called "public resolvers" are likely to use this mechanism responsibly), its history (e.g., a well-known Internet Service Provider that has been subject to legal filtering orders), or local configuration (e.g., application or operating system settings that indicate that a particular resolver is to be trusted).
 
 --- back
+
+# Acknowledgements
+
+Thanks to David Adrian, Tommy Pauly, Emily Stark, and Martin Thomson for their input to this specification.
