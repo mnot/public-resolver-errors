@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-11T00:29:38.971166+00:00",
+  "timestamp": "2025-03-13T00:29:58.509696+00:00",
   "repo": "mnot/public-resolver-errors",
   "labels": [
     {
@@ -62,7 +62,7 @@
       "labels": [],
       "body": "The JSON makes four fields mandatory.  If the resolver operator is in the registry, then you really only need their identity (for looking up the URL template) and the incident code (to add to the resolver identity for use in the template).  The authority and description are details that can be provided at the URL.\n\nGiven that, and given the i18n shortcomings of a static JSON format, I'd suggest making the authority and description fields optional.",
       "createdAt": "2025-02-17T05:29:29Z",
-      "updatedAt": "2025-02-17T05:29:29Z",
+      "updatedAt": "2025-03-12T15:07:12Z",
       "closedAt": null,
       "comments": []
     },
@@ -78,7 +78,7 @@
       "labels": [],
       "body": "The current version says:\n\n> In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see [RFC8914]) and an EXTRA-TEXT [...]\n\nThat code is \"Filtered\".  But I think that the rule could probably be any of the following (from RFC 8914):\n\n* 4.16. Extended DNS Error Code 15 - Blocked\n* 4.17. Extended DNS Error Code 16 - Censored\n* 4.18. Extended DNS Error Code 17 - Filtered\n\nThe extent to which the difference between these codes is important (and how much the server can reveal) doesn't seem important.\n\nAlso, given how each code is relatively short, perhaps this could include the name as well.  My reaction to seeing this was \"well, of *course* it's code 17, *everyone* knows what code 17 means\".",
       "createdAt": "2025-02-18T05:58:50Z",
-      "updatedAt": "2025-02-18T05:58:50Z",
+      "updatedAt": "2025-03-12T02:11:44Z",
       "closedAt": null,
       "comments": []
     }
