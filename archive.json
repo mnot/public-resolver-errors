@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-20T00:29:24.600811+00:00",
+  "timestamp": "2025-03-23T00:32:38.147046+00:00",
   "repo": "mnot/public-resolver-errors",
   "labels": [
     {
@@ -78,9 +78,17 @@
       "labels": [],
       "body": "The current version says:\n\n> In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see [RFC8914]) and an EXTRA-TEXT [...]\n\nThat code is \"Filtered\".  But I think that the rule could probably be any of the following (from RFC 8914):\n\n* 4.16. Extended DNS Error Code 15 - Blocked\n* 4.17. Extended DNS Error Code 16 - Censored\n* 4.18. Extended DNS Error Code 17 - Filtered\n\nThe extent to which the difference between these codes is important (and how much the server can reveal) doesn't seem important.\n\nAlso, given how each code is relatively short, perhaps this could include the name as well.  My reaction to seeing this was \"well, of *course* it's code 17, *everyone* knows what code 17 means\".",
       "createdAt": "2025-02-18T05:58:50Z",
-      "updatedAt": "2025-03-12T02:11:44Z",
+      "updatedAt": "2025-03-20T06:36:42Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "Shiw5656",
+          "authorAssociation": "NONE",
+          "body": "The current text only mentions Extended DNS Error (EDE) Code 17 (\"Filtered\"), but RFC 8914 also defines related codes:\n\nCode 15: \"Blocked\"\nCode 16: \"Censored\"\nCode 17: \"Filtered\"\nSince the distinction between these codes might not always be critical, it would be helpful to list all three for clarity. Additionally, including both the code number and name (e.g., \"15 (Blocked), 16 (Censored), or 17 (Filtered)\") makes the meaning clearer without requiring readers to look up RFC 8914.",
+          "createdAt": "2025-03-20T06:36:41Z",
+          "updatedAt": "2025-03-20T06:36:41Z"
+        }
+      ]
     }
   ],
   "pulls": [
