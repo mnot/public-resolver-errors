@@ -31,7 +31,7 @@ author:
 
 --- abstract
 
-{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents to their users.
+{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents.
 
 --- middle
 
@@ -40,28 +40,59 @@ author:
 
 Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.
 
-This draft defines a mechanism to communicate such details when DNS resolver filtering of a name is legally mandated, based upon the structured error data for DNS responses introduced by {{!I-D.ietf-dnsop-structured-dns-error}}.
+Some organizations, such as Lumen, monitor legally-mandated filtering as a
+public good, and track filtering incidents in a publicly accessible databases.
+Public resolvers themselves may also choose to track filtering requests over
+time and make them available.
 
-Allowing DNS resolvers to inject user-visible messages brings unique challenges. Because DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using.
+This draft defines a mechanism to communicate an identifier in a database of
+filtering incidents when a DNS resolver filtering of a name is legally mandated,
+based upon the structured error data for DNS responses introduced by
+{{!I-D.ietf-dnsop-structured-dns-error}}.
 
-Furthermore, lowering the barrier to the presentation of messages explaining why access has been denied by the DNS resolver risks encouraging the wider deployment of DNS-based censorship on the Internet.
+A consuming party (e.g., a Web browser) can use the identifier to construct a
+link to the specific entry in the database provider. This enables user agents to
+direct users to a location with additional context about why the filtering was
+required.
 
-This draft attempts to mitigate these risks by minimising the information carried in the DNS response to abstract, publicly registered identifiers -- the DNS Resolver Operator ID and the Filtering Incident ID. A consuming party (e.g., a Web browser) can selectively present messages from those operators that they believe to be using this mechanism for its stated goal -- in particular, those who using it to surface policy-driven filtering, rather than enact discretionary censorship or attack end users.
+Allowing DNS resolvers to inject links or user-visible messages brings unique challenges.
+Because DNS resolvers are often automatically configured by unknown networks and
+DNS responses are unauthenticated, these messages can come from untrusted
+parties -- including attackers (e.g., the so-called "coffee shop" attack) that
+leverage many users' lack of a nuanced model of the trust relationships between
+all of the parties that are involved in the service they are using. Furthermore,
+lowering the barrier to the presentation of messages explaining why access has
+been denied by the DNS resolver risks encouraging the wider deployment of
+DNS-based censorship on the Internet.
+
+This draft attempts to mitigate these risks by minimising the information
+carried in the DNS response to abstract, publicly registered identifiers
+associated with databases of filtering incidents---the Database Operator ID and
+the Filtering Incident ID. A consuming party can choose which database
+identifiers they support are are willing to direct their users to, without
+enabling every DNS server to surface arbitrary links and text.
 
 ## Example
 
-In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see {{!RFC8914}}) and an EXTRA-TEXT field containing:
+In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see {{!RFC8914}}) and an EXTRA-TEXT field "fdb", which is an array of references to filtering database entries:
 
 ~~~ json
 {
-  "ro": "exampleResolver",
-  "inc": "abc123"
+  "fdb": [
+    {"db": "example",
+    "inc": "abc123"},
+    {"db": "lumen",
+    "inc": "def456"}
+  ]
 }
 ~~~
 
-This indicates that the "exampleResolver" resolver has generated the error, and the incident identifier is "abc123".
+This indicates that the filtering incident can be accessed in two different
+databases, and the ID associated with each database. In this example, the data
+is available in the "example" database at identifier "abc123", and in the "lumen"
+database at identifier "def456".
 
-An application that decides to present errors from "exampleResolver" to its users would look up "exampleResolver" in a local copy of the IANA DNS Resolver Identifier Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
+An application that evaluates the DNS server and decides to present links to "example" to its users would look up "example" in a local copy of the DNS Filtering Incident Database Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
 
 ~~~
 https://resolver.example.com/filtering-incidents/{inc}
@@ -80,7 +111,7 @@ The application could (but might not) then decide to convey some or all of this 
 >
 > https://resolver.example.com/filtering-incidents/abc123
 
-Note that there is no requirement for the template to expand to a URL on any particular hostname; for example, it could be hosted by a party other than the resolver's server.
+Note that there is no requirement for the resolver to construct links to any database, nor for results from any DNS server. The resolver both choose which database providers it supports, and can evaluate whatever mechanisms it chooses to determine when and if to provide the link to the database provider.
 
 
 ## Notational Conventions
@@ -91,39 +122,54 @@ Note that there is no requirement for the template to expand to a URL on any par
 
 This section defines the data types used to look up the details of a filtering incident from a DNS error response. Note that these identifiers are not for presentation to end users.
 
-## DNS Resolver Operator ID {#op-id}
+## DNS Filtering Database Entry {#entry-id}
 
-A DNS Resolver Operator ID is a short, textual string that uniquely identifies the operator of a DNS resolver. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "ro". For example:
+A Filtering Database ID is a short, textual string that uniquely identifies the
+operator of a database of filtering incidents. It uses the key "db".
 
-~~~ json
-{
-  "ro": "exampleResolver"
-}
-~~~
+A Filtering Incident ID is an opaque, string identifier for a particular
+filtering incident. It might be specific to a particular request, but need not
+be. It uses the key "inc".
 
-Generators MUST only use values that are registered in the DNS Resolver Operator registry; see {{registry}}. Consumers MUST ignore unregistered values, and MAY ignore registered values.
-
-## Filtering Incident ID {#incident-id}
-
-A Filtering Incident ID is an opaque, string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "inc". For example:
+An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.
 
 ~~~ json
 {
+  "db": "example",
   "inc": "abc123"
 }
 ~~~
 
-# Incident Resolution Templates {#template}
+## DNS Filtering Database Entry List {#entry-list}
+
+A DNS Filtering Database Entries list is an array of Filtering Database Entry
+objects. Each entry MUST be a unique identifier for the same underlying
+incident.
+
+It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON
+field name "fdbs". For example:
+
+~~~ json
+{
+  "fdbs": [ { ... }, { ... }, ... ]
+}
+~~~
+
+Different clients will implement support for a varying set of database
+operators. Resolvers provide a list of entries (rather than a single entry) so
+that they can support as many clients with diverse database sets as possible.
+
+# Database Entry Resolution Templates {#template}
 
 An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
 
-It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables available to it:
+It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables from the Filtering Database Entry (see {{entry-id}}) available to it:
 
-ro:
-: the DNS Resolver Operator ID (see {{op-id}})
+db:
+: the Filtering Database Operator ID
 
 inc:
-: the Filtering Incident ID (see {{incident-id}})
+: the Filtering Incident ID
 
 For example:
 
@@ -131,7 +177,7 @@ For example:
 https://resolver.example.com/filtering-incidents/{inc}
 ~~~
 
-Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use.
+Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
 
 
 # IANA Considerations
@@ -141,10 +187,10 @@ Applications MUST store a local copy of the DNS Resolver Identifier Registry for
 IANA will register the following fields in the "EXTRA-TEXT JSON Names" sub-registry established by {{I-D.ietf-dnsop-structured-dns-error}}:
 
 JSON Name:
-: "ro"
+: "fdbs"
 
 Short Description:
-: a short, textual string that uniquely identifies the operator of a DNS resolver
+: a array of filtering database entries
 
 Mandatory:
 : no
@@ -153,19 +199,6 @@ Specification:
 : this document
 {: spacing="compact"}
 
-
-JSON Name:
-: "inc"
-
-Short Description:
-: an opaque, string identifier for a particular filtering incident
-
-Mandatory:
-: no
-
-Specification:
-: this document
-{: spacing="compact"}
 
 ## The DNS Resolver Identifier Registry {#registry}
 
@@ -180,13 +213,12 @@ Contact:
 : an e-mail address or other appropriate contact mechanism
 
 DNS Resolver Operator ID:
-: see {{op-id}}
+: see {{entry-id}}
 
 Incident Resolution Template:
 : see {{template}}
 
 The Incident Resolution Template can be updated by the contact at any time. However, operators SHOULD accommodate potentially long lag times for applications to update their copies of the registry.
-
 
 # Security Considerations
 
