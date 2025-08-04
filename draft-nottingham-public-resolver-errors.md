@@ -27,7 +27,7 @@ author:
     name: David Adrian
     organization: Google
     country: USA
-    email: dadrian@google.com
+    email: davidcadrian@gmail.com
 
 --- abstract
 
