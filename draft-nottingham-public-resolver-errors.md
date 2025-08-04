@@ -55,22 +55,20 @@ link to the specific entry in the database provider. This enables user agents to
 direct users to a location with additional context about why the filtering was
 required.
 
-Allowing DNS resolvers to inject links or user-visible messages brings unique challenges.
-Because DNS resolvers are often automatically configured by unknown networks and
-DNS responses are unauthenticated, these messages can come from untrusted
-parties -- including attackers (e.g., the so-called "coffee shop" attack) that
-leverage many users' lack of a nuanced model of the trust relationships between
-all of the parties that are involved in the service they are using. Furthermore,
-lowering the barrier to the presentation of messages explaining why access has
-been denied by the DNS resolver risks encouraging the wider deployment of
-DNS-based censorship on the Internet.
-
-This draft attempts to mitigate these risks by minimising the information
-carried in the DNS response to abstract, publicly registered identifiers
-associated with databases of filtering incidents---the Database Operator ID and
-the Filtering Incident ID. A consuming party can choose which database
-identifiers they support are are willing to direct their users to, without
-enabling every DNS server to surface arbitrary links and text.
+This abstraction is necessary because allowing DNS resolvers to inject links or
+user-visible messages brings unique challenges. DNS resolvers are often
+automatically configured by unknown networks and DNS responses are
+unauthenticated, so these messages can come from untrusted parties -- including
+attackers (e.g., the so-called "coffee shop" attack) that leverage many users'
+lack of a nuanced model of the trust relationships between all of the parties
+that are involved in the service they are using. This draft attempts to mitigate
+the risk by minimising the information carried in the DNS response to abstract,
+publicly registered identifiers associated with databases of filtering
+incidents---the Database Operator ID and the Filtering Incident ID---rather than
+arbitrary URLs. A consuming party can choose which database identifiers they
+support are are willing to direct their users to, without enabling every DNS
+server to surface arbitrary links and text, and without requiring every
+consuming party to independently track which URLs are in use.
 
 ## Example
 
