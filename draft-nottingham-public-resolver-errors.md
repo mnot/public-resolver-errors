@@ -210,7 +210,7 @@ Name:
 Contact:
 : an e-mail address or other appropriate contact mechanism
 
-DNS Resolver Operator ID:
+DNS Resolver Database ID:
 : see {{entry-id}}
 
 Incident Resolution Template:
@@ -230,4 +230,5 @@ Because the registry is first-come, first-served, Applications (such as Web brow
 
 # Acknowledgements
 
-Thanks to David Adrian, Tommy Pauly, Emily Stark, and Martin Thomson for their input to this specification.
+Thanks to Lars Eggert, Tommy Pauly, Emily Stark, and Martin Thomson for their
+input to this specification.
