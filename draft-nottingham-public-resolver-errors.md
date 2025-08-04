@@ -114,7 +114,7 @@ The application could (but might not) then decide to convey some or all of this 
 >
 > https://resolver.example.com/filtering-incidents/abc123
 
-Note that there is no requirement for the resolver to construct links to any database, nor for results from any DNS server. The resolver both choose which database providers it supports, and can evaluate whatever mechanisms it chooses to determine when and if to provide the link to the database provider.
+Note that there is no requirement for the resolver to construct links to any database, nor for results from any DNS server. The resolver both chooses which database providers it supports, and can evaluate whatever mechanisms it chooses to determine if and when to provide a link to the database entry.
 
 
 ## Notational Conventions
