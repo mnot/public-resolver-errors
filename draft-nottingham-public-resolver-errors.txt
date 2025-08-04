@@ -4,8 +4,9 @@
 
 Network Working Group                                      M. Nottingham
 Internet-Draft                                                Cloudflare
-Intended status: Standards Track                           4 August 2025
-Expires: 5 February 2026
+Intended status: Standards Track                               D. Adrian
+Expires: 5 February 2026                                          Google
+                                                           4 August 2025
 
 
                  DNS Filtering Details for Applications
@@ -71,7 +72,7 @@ Table of Contents
    5.  Security Considerations
    6.  Normative References
    Appendix A.  Acknowledgements
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -316,7 +317,7 @@ Appendix A.  Acknowledgements
    Thanks to David Adrian, Tommy Pauly, Emily Stark, and Martin Thomson
    for their input to this specification.
 
-Author's Address
+Authors' Addresses
 
    Mark Nottingham
    Cloudflare
@@ -324,3 +325,9 @@ Author's Address
    Australia
    Email: mnot@mnot.net
    URI:   https://www.mnot.net/
+
+
+   David Adrian
+   Google
+   United States of America
+   Email: dadrian@google.com
