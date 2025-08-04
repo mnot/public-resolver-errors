@@ -4,8 +4,8 @@
 
 Network Working Group                                      M. Nottingham
 Internet-Draft                                                Cloudflare
-Intended status: Standards Track                        21 February 2025
-Expires: 25 August 2025
+Intended status: Standards Track                           4 August 2025
+Expires: 5 February 2026
 
 
                  DNS Filtering Details for Applications
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 August 2025.
+   This Internet-Draft will expire on 5 February 2026.
 
 Copyright Notice
 
@@ -288,9 +288,9 @@ Table of Contents
               Wing, D., Reddy.K, T., Cook, N., and M. Boucadair,
               "Structured Error Data for Filtered DNS", Work in
               Progress, Internet-Draft, draft-ietf-dnsop-structured-dns-
-              error-10, 26 November 2024,
+              error-15, 5 May 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-dnsop-
-              structured-dns-error-10>.
+              structured-dns-error-15>.
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -320,7 +320,7 @@ Author's Address
 
    Mark Nottingham
    Cloudflare
-   Prahran
+   Melbourne
    Australia
    Email: mnot@mnot.net
    URI:   https://www.mnot.net/
