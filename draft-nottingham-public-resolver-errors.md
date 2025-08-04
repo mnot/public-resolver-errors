@@ -61,7 +61,7 @@ direct users to a location with additional context about why the filtering was
 required.
 
 This abstraction is necessary because allowing DNS resolvers to inject links or
-user-visible messages brings unique challenges. DNS resolvers are often
+user-visible messages would bring unique challenges. DNS resolvers are often
 automatically configured by unknown networks and DNS responses are
 unauthenticated, so these messages can come from untrusted parties -- including
 attackers (e.g., the so-called "coffee shop" attack) that leverage many users'
