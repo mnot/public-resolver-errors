@@ -46,7 +46,7 @@ informative:
 Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.
 
 Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering
-as a public good, and track filtering incidents in a publicly accessible
+as a public service, and track filtering incidents in publicly accessible
 databases. Public resolvers themselves may also choose to track filtering
 requests over time and make them available.
 
