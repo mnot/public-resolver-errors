@@ -29,6 +29,11 @@ author:
     country: USA
     email: davidcadrian@gmail.com
 
+informative:
+  lumen:
+    target: https://lumendatabase.org/
+    title: Lumen
+
 --- abstract
 
 {{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents.
@@ -40,10 +45,10 @@ author:
 
 Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.
 
-Some organizations, such as Lumen, monitor legally-mandated filtering as a
-public good, and track filtering incidents in a publicly accessible databases.
-Public resolvers themselves may also choose to track filtering requests over
-time and make them available.
+Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering
+as a public good, and track filtering incidents in a publicly accessible
+databases. Public resolvers themselves may also choose to track filtering
+requests over time and make them available.
 
 This draft defines a mechanism to communicate an identifier in a database of
 filtering incidents when a DNS resolver filtering of a name is legally mandated,
