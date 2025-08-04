@@ -82,7 +82,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
     {"db": "example",
     "id": "abc123"},
     {"db": "lumen",
-    "inc": "def456"}
+    "id": "def456"}
   ]
 }
 ~~~
@@ -95,10 +95,10 @@ database at identifier "def456".
 An application that evaluates the DNS server and decides to present links to "example" to its users would look up "example" in a local copy of the DNS Filtering Incident Database Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
 
 ~~~
-https://resolver.example.com/filtering-incidents/{inc}
+https://resolver.example.com/filtering-incidents/{id}
 ~~~
 
-That template can be expanded using the value of "inc" to:
+That template can be expanded using the value of "id" to:
 
 ~~~
 https://resolver.example.com/filtering-incidents/abc123
@@ -129,14 +129,14 @@ operator of a database of filtering incidents. It uses the key "db".
 
 A Filtering Incident ID is an opaque, string identifier for a particular
 filtering incident. It might be specific to a particular request, but need not
-be. It uses the key "inc".
+be. It uses the key "id".
 
 An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.
 
 ~~~ json
 {
   "db": "example",
-  "inc": "abc123"
+  "id": "abc123"
 }
 ~~~
 
@@ -168,7 +168,7 @@ It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It ha
 db:
 : the Filtering Database Operator ID
 
-inc:
+id:
 : the Filtering Incident ID
 
 For example:
