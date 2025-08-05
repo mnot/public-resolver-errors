@@ -8,7 +8,7 @@
 <meta content="Mark Nottingham" name="author">
 <meta content="David Adrian" name="author">
 <meta content="
-        introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents. 
+        introduces structured error data for DNS responses that have been filtered. This specification allows more specific details of filtering incidents to be conveyed. 
     " name="description">
 <meta content="xml2rfc 3.30.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
@@ -1084,7 +1084,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <h1 id="title">DNS Filtering Details for Applications</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1"><span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span> introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1"><span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span> introduces structured error data for DNS responses that have been filtered. This specification allows more specific details of filtering incidents to be conveyed.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-discussion-venues">
@@ -1174,7 +1174,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-extra-text-json-names" class="internal xref">EXTRA-TEXT JSON Names</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
-                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-the-dns-resolver-identifier" class="internal xref">The DNS Resolver Identifier Registry</a></p>
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-the-dns-filtering-database-" class="internal xref">The DNS Filtering Database Registry</a></p>
 </li>
             </ul>
 </li>
@@ -1208,10 +1208,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
 <p id="section-1-1">Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">Some organizations, such as Lumen <span>[<a href="#lumen" class="cite xref">lumen</a>]</span>, monitor legally-mandated filtering as a public service, and track filtering incidents in publicly accessible databases. Public resolvers themselves may also choose to track filtering requests over time and make them available.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">This draft defines a mechanism to communicate an identifier in a database of filtering incidents when a DNS resolver filtering of a name is legally mandated, based upon the structured error data for DNS responses introduced by <span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">A consuming party (e.g., a Web browser) can use the identifier to construct a link to the specific entry in the database provider. This enables user agents to direct users to a location with additional context about why the filtering was required.<a href="#section-1-4" class="pilcrow">¶</a></p>
-<p id="section-1-5">This abstraction is necessary because allowing DNS resolvers to inject links or user-visible messages would bring unique challenges. DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, so these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using. This draft attempts to mitigate the risk by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents---the Database Operator ID and the Filtering Incident ID---rather than arbitrary URLs. A consuming party can choose which database identifiers they support are are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring every consuming party to independently track which URLs are in use.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-2">Some organizations, such as Lumen <span>[<a href="#lumen" class="cite xref">lumen</a>]</span>, monitor legally-mandated filtering as a public service, tracking specific filtering incidents in publicly accessible databases. Public resolvers themselves may also choose to track filtering requests over time and make them available.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">This draft defines a mechanism for DNS resolvers to convey identifiers for entries in such databases, based upon the structured error data for DNS responses introduced by <span>[<a href="#I-D.ietf-dnsop-structured-dns-error" class="cite xref">I-D.ietf-dnsop-structured-dns-error</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">A consuming party (e.g., a Web browser) can use this information to construct a link to the specific entry in the provider's database of filtering incidents. This enables user agents to direct users to additional context about the filtering incident they encountered.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">The information conveyed is a DNS Filtering Database Entry, specified in <a href="#entry-id" class="auto internal xref">Section 2.1</a>. This abstraction is necessary because allowing DNS resolvers to inject links or user-visible messages would bring unique challenges. DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, so these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<p id="section-1-6">This draft attempts to mitigate these risks by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents -- the DNS Filtering Database Entry -- rather than arbitrary URLs. A consuming party can choose which database identifiers they support are are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring every consuming party to independently track which URLs are in use.<a href="#section-1-6" class="pilcrow">¶</a></p>
 <div id="example">
 <section id="section-1.1">
         <h3 id="name-example">
@@ -1221,7 +1222,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div class="lang-json sourcecode" id="section-1.1-2">
 <pre>
 {
-  "fdb": [
+  "fdbs": [
     {"db": "example",
     "id": "abc123"},
     {"db": "lumen",
@@ -1277,9 +1278,9 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <h3 id="name-dns-filtering-database-entr">
 <a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-dns-filtering-database-entr" class="section-name selfRef">DNS Filtering Database Entry</a>
         </h3>
-<p id="section-2.1-1">A Filtering Database ID is a short, textual string that uniquely identifies the operator of a database of filtering incidents. It uses the key "db".<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<p id="section-2.1-1">A Filtering Database Operator ID is a string identifier for the operator of a database of filtering incidents. It uses the key "db".<a href="#section-2.1-1" class="pilcrow">¶</a></p>
 <p id="section-2.1-2">A Filtering Incident ID is a string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It uses the key "id".<a href="#section-2.1-2" class="pilcrow">¶</a></p>
-<p id="section-2.1-3">An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
+<p id="section-2.1-3">An object containing both a Filtering Database Operator ID and a Filtering Incident ID is a Filtering Database Entry.<a href="#section-2.1-3" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-2.1-4">
 <pre>
 {
@@ -1295,7 +1296,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
         <h3 id="name-dns-filtering-database-entry">
 <a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-dns-filtering-database-entry" class="section-name selfRef">DNS Filtering Database Entry List</a>
         </h3>
-<p id="section-2.2-1">A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry <span class="bcp14">MUST</span> be a unique identifier for the same underlying incident.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-1">A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry <span class="bcp14">MUST</span> be related to the same underlying incident.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
 <p id="section-2.2-2">It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "fdbs". For example:<a href="#section-2.2-2" class="pilcrow">¶</a></p>
 <div class="lang-json sourcecode" id="section-2.2-3">
 <pre>
@@ -1314,7 +1315,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
       <h2 id="name-database-entry-resolution-t">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-database-entry-resolution-t" class="section-name selfRef">Database Entry Resolution Templates</a>
       </h2>
-<p id="section-3-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> contained in the DNS Resolver Identifier Registry (<a href="#registry" class="auto internal xref">Section 4.2</a>) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">An Incident Resolution Template is a URI Template <span>[<a href="#RFC6570" class="cite xref">RFC6570</a>]</span> contained in the DNS Filtering Database Registry (<a href="#registry" class="auto internal xref">Section 4.2</a>) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">It <span class="bcp14">MUST</span> be a Level 1 or Level 2 template (see <span><a href="https://rfc-editor.org/rfc/rfc6570#section-1.2" class="relref">Section 1.2</a> of [<a href="#RFC6570" class="cite xref">RFC6570</a>]</span>). It has the following variables from the Filtering Database Entry (see <a href="#entry-id" class="auto internal xref">Section 2.1</a>) available to it:<a href="#section-3-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-3-3">
         <dt id="section-3-3.1">db:</dt>
@@ -1334,7 +1335,7 @@ appear in all capitals, as shown here.<a href="#section-1.2-1" class="pilcrow">�
 https://resolver.example.com/filtering-incidents/{inc}
 </pre><a href="#section-3-5" class="pilcrow">¶</a>
 </div>
-<p id="section-3-6">Applications <span class="bcp14">MUST</span> store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they <span class="bcp14">MUST NOT</span> query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-6">Applications <span class="bcp14">MUST</span> store a local copy of the DNS Filtering Database Registry (<a href="#registry" class="auto internal xref">Section 4.2</a>) for purposes of template lookup; they <span class="bcp14">MUST NOT</span> query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.<a href="#section-3-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
@@ -1374,15 +1375,15 @@ https://resolver.example.com/filtering-incidents/{inc}
 </div>
 <div id="registry">
 <section id="section-4.2">
-        <h3 id="name-the-dns-resolver-identifier">
-<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-the-dns-resolver-identifier" class="section-name selfRef">The DNS Resolver Identifier Registry</a>
+        <h3 id="name-the-dns-filtering-database-">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-the-dns-filtering-database-" class="section-name selfRef">The DNS Filtering Database Registry</a>
         </h3>
-<p id="section-4.2-1">IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-1">IANA will establish a new registry, the "DNS Filtering Database Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
 <p id="section-4.2-2">It contains the following fields:<a href="#section-4.2-2" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-4.2-3">
           <dt id="section-4.2-3.1">Name:</dt>
           <dd style="margin-left: 1.5em" id="section-4.2-3.2">
-            <p id="section-4.2-3.2.1">The name of the DNS resolver operator<a href="#section-4.2-3.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.2-3.2.1">The name of the DNS Filtering Database<a href="#section-4.2-3.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-4.2-3.3">Contact:</dt>
@@ -1390,7 +1391,7 @@ https://resolver.example.com/filtering-incidents/{inc}
             <p id="section-4.2-3.4.1">an e-mail address or other appropriate contact mechanism<a href="#section-4.2-3.4.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-4.2-3.5">DNS Resolver Database ID:</dt>
+<dt id="section-4.2-3.5">Filtering Database Operator ID:</dt>
           <dd style="margin-left: 1.5em" id="section-4.2-3.6">
             <p id="section-4.2-3.6.1">see <a href="#entry-id" class="auto internal xref">Section 2.1</a><a href="#section-4.2-3.6.1" class="pilcrow">¶</a></p>
 </dd>
@@ -1411,9 +1412,9 @@ https://resolver.example.com/filtering-incidents/{inc}
       <h2 id="name-security-considerations">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-5-1">This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Resolver Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-1">This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Filtering Database Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <p id="section-5-2">The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.<a href="#section-5-2" class="pilcrow">¶</a></p>
-<p id="section-5-3">Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which operators' error messages they display to users. This decision might be influenced by the identity of the resolver (e.g., so-called "public resolvers" are likely to use this mechanism responsibly), its history (e.g., a well-known Internet Service Provider that has been subject to legal filtering orders), or local configuration (e.g., application or operating system settings that indicate that a particular resolver is to be trusted).<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-3">Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which database operators' error messages they display to users. This decision might be influenced by the identity of the resolver producing the error message, the database operator, or local configuration.<a href="#section-5-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="sec-combined-references">
