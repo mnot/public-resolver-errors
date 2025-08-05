@@ -61,7 +61,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 
 ~~~ json
 {
-  "fdb": [
+  "fdbs": [
     {"db": "example",
     "id": "abc123"},
     {"db": "lumen",
