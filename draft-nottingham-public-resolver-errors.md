@@ -104,11 +104,11 @@ This section defines the data types used to look up the details of a filtering i
 
 ## DNS Filtering Database Entry {#entry-id}
 
-A Filtering Database ID is a string identifier for the operator of a database of filtering incidents. It uses the key "db".
+A Filtering Database Operator ID is a string identifier for the operator of a database of filtering incidents. It uses the key "db".
 
 A Filtering Incident ID is a string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It uses the key "id".
 
-An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.
+An object containing both a Filtering Database Operator ID and a Filtering Incident ID is a Filtering Database Entry.
 
 ~~~ json
 {
@@ -133,7 +133,7 @@ Different clients will implement support for a varying set of database operators
 
 # Database Entry Resolution Templates {#template}
 
-An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
+An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Filtering Database Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
 
 It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables from the Filtering Database Entry (see {{entry-id}}) available to it:
 
@@ -149,7 +149,7 @@ For example:
 https://resolver.example.com/filtering-incidents/{inc}
 ~~~
 
-Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
+Applications MUST store a local copy of the DNS Filtering Database Registry ({{registry}}) for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
 
 
 # IANA Considerations
@@ -172,19 +172,19 @@ Specification:
 {: spacing="compact"}
 
 
-## The DNS Resolver Identifier Registry {#registry}
+## The DNS Filtering Database Registry {#registry}
 
-IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.
+IANA will establish a new registry, the "DNS Filtering Database Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.
 
 It contains the following fields:
 
 Name:
-: The name of the DNS resolver operator
+: The name of the DNS Filtering Database
 
 Contact:
 : an e-mail address or other appropriate contact mechanism
 
-DNS Resolver Database ID:
+Filtering Database Operator ID:
 : see {{entry-id}}
 
 Incident Resolution Template:
@@ -194,7 +194,7 @@ The Incident Resolution Template can be updated by the contact at any time. Howe
 
 # Security Considerations
 
-This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Resolver Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
+This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Filtering Database Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
 
 The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.
 
