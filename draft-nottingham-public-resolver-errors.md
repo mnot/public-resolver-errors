@@ -104,7 +104,7 @@ This section defines the data types used to look up the details of a filtering i
 
 ## DNS Filtering Database Entry {#entry-id}
 
-A Filtering Database ID is a short, textual string that uniquely identifies the operator of a database of filtering incidents. It uses the key "db".
+A Filtering Database ID is a string identifier for the operator of a database of filtering incidents. It uses the key "db".
 
 A Filtering Incident ID is a string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It uses the key "id".
 
