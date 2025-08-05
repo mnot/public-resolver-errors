@@ -36,7 +36,7 @@ informative:
 
 --- abstract
 
-{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents.
+{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This specification allows more specific details of filtering incidents to be conveyed.
 
 --- middle
 
