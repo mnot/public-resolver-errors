@@ -45,35 +45,13 @@ informative:
 
 Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.
 
-Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering
-as a public service, and track filtering incidents in publicly accessible
-databases. Public resolvers themselves may also choose to track filtering
-requests over time and make them available.
+Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering as a public service, and track filtering incidents in publicly accessible databases. Public resolvers themselves may also choose to track filtering requests over time and make them available.
 
-This draft defines a mechanism to communicate an identifier in a database of
-filtering incidents when a DNS resolver filtering of a name is legally mandated,
-based upon the structured error data for DNS responses introduced by
-{{!I-D.ietf-dnsop-structured-dns-error}}.
+This draft defines a mechanism to communicate an identifier in a database of filtering incidents when a DNS resolver filtering of a name is legally mandated, based upon the structured error data for DNS responses introduced by {{!I-D.ietf-dnsop-structured-dns-error}}.
 
-A consuming party (e.g., a Web browser) can use the identifier to construct a
-link to the specific entry in the database provider. This enables user agents to
-direct users to a location with additional context about why the filtering was
-required.
+A consuming party (e.g., a Web browser) can use the identifier to construct a link to the specific entry in the database provider. This enables user agents to direct users to a location with additional context about why the filtering was required.
 
-This abstraction is necessary because allowing DNS resolvers to inject links or
-user-visible messages would bring unique challenges. DNS resolvers are often
-automatically configured by unknown networks and DNS responses are
-unauthenticated, so these messages can come from untrusted parties -- including
-attackers (e.g., the so-called "coffee shop" attack) that leverage many users'
-lack of a nuanced model of the trust relationships between all of the parties
-that are involved in the service they are using. This draft attempts to mitigate
-the risk by minimising the information carried in the DNS response to abstract,
-publicly registered identifiers associated with databases of filtering
-incidents---the Database Operator ID and the Filtering Incident ID---rather than
-arbitrary URLs. A consuming party can choose which database identifiers they
-support are are willing to direct their users to, without enabling every DNS
-server to surface arbitrary links and text, and without requiring every
-consuming party to independently track which URLs are in use.
+This abstraction is necessary because allowing DNS resolvers to inject links or user-visible messages would bring unique challenges. DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, so these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using. This draft attempts to mitigate the risk by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents---the Database Operator ID and the Filtering Incident ID---rather than arbitrary URLs. A consuming party can choose which database identifiers they support are are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring every consuming party to independently track which URLs are in use.
 
 ## Example
 
@@ -90,10 +68,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 }
 ~~~
 
-This indicates that the filtering incident can be accessed in two different
-databases, and the ID associated with each database. In this example, the data
-is available in the "example" database at identifier "abc123", and in the "lumen"
-database at identifier "def456".
+This indicates that the filtering incident can be accessed in two different databases, and the ID associated with each database. In this example, the data is available in the "example" database at identifier "abc123", and in the "lumen" database at identifier "def456".
 
 An application that evaluates the DNS server and decides to present links to "example" to its users would look up "example" in a local copy of the DNS Filtering Incident Database Registry (see {{registry}}) and obtain the corresponding template (see {{template}}). For purposes of this example, assume that the registry entry for that value contains:
 
@@ -127,12 +102,9 @@ This section defines the data types used to look up the details of a filtering i
 
 ## DNS Filtering Database Entry {#entry-id}
 
-A Filtering Database ID is a short, textual string that uniquely identifies the
-operator of a database of filtering incidents. It uses the key "db".
+A Filtering Database ID is a short, textual string that uniquely identifies the operator of a database of filtering incidents. It uses the key "db".
 
-A Filtering Incident ID is a string identifier for a particular
-filtering incident. It might be specific to a particular request, but need not
-be. It uses the key "id".
+A Filtering Incident ID is a string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It uses the key "id".
 
 An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.
 
@@ -145,12 +117,9 @@ An object containing both a Filtering Database ID and a Filtering Incident ID is
 
 ## DNS Filtering Database Entry List {#entry-list}
 
-A DNS Filtering Database Entries list is an array of Filtering Database Entry
-objects. Each entry MUST be a unique identifier for the same underlying
-incident.
+A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry MUST be a unique identifier for the same underlying incident.
 
-It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON
-field name "fdbs". For example:
+It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "fdbs". For example:
 
 ~~~ json
 {
@@ -158,9 +127,7 @@ field name "fdbs". For example:
 }
 ~~~
 
-Different clients will implement support for a varying set of database
-operators. Resolvers provide a list of entries (rather than a single entry) so
-that they can support as many clients with diverse database sets as possible.
+Different clients will implement support for a varying set of database operators. Resolvers provide a list of entries (rather than a single entry) so that they can support as many clients with diverse database sets as possible.
 
 # Database Entry Resolution Templates {#template}
 
@@ -235,5 +202,4 @@ Because the registry is first-come, first-served, Applications (such as Web brow
 
 # Acknowledgements
 
-Thanks to Lars Eggert, Tommy Pauly, Emily Stark, and Martin Thomson for their
-input to this specification.
+Thanks to Lars Eggert, Tommy Pauly, Emily Stark, and Martin Thomson for their input to this specification.
