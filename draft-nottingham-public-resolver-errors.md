@@ -36,7 +36,7 @@ informative:
 
 --- abstract
 
-{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This draft suggests additions to that mechanism that enable applications to convey the details of some filtering incidents by referencing entries in a database of incidents.
+{{!I-D.ietf-dnsop-structured-dns-error}} introduces structured error data for DNS responses that have been filtered. This specification allows more specific details of filtering incidents to be conveyed.
 
 --- middle
 
@@ -45,13 +45,15 @@ informative:
 
 Internet DNS resolvers are increasingly subject to legal orders that require blocking or filtering of specific names. Because such filtering happens during DNS resolution, there is not an effective way to communicate what is happening to end users, often resulting in misattribution of the issue as a technical problem, rather than a policy intervention.
 
-Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering as a public service, and track filtering incidents in publicly accessible databases. Public resolvers themselves may also choose to track filtering requests over time and make them available.
+Some organizations, such as Lumen {{lumen}}, monitor legally-mandated filtering as a public service, tracking specific filtering incidents in publicly accessible databases. Public resolvers themselves may also choose to track filtering requests over time and make them available.
 
-This draft defines a mechanism to communicate an identifier in a database of filtering incidents when a DNS resolver filtering of a name is legally mandated, based upon the structured error data for DNS responses introduced by {{!I-D.ietf-dnsop-structured-dns-error}}.
+This draft defines a mechanism for DNS resolvers to convey identifiers for entries in such databases, based upon the structured error data for DNS responses introduced by {{!I-D.ietf-dnsop-structured-dns-error}}.
 
-A consuming party (e.g., a Web browser) can use the identifier to construct a link to the specific entry in the database provider. This enables user agents to direct users to a location with additional context about why the filtering was required.
+A consuming party (e.g., a Web browser) can use this information to construct a link to the specific entry in the provider's database of filtering incidents. This enables user agents to direct users to additional context about the filtering incident they encountered.
 
-This abstraction is necessary because allowing DNS resolvers to inject links or user-visible messages would bring unique challenges. DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, so these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using. This draft attempts to mitigate the risk by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents---the Database Operator ID and the Filtering Incident ID---rather than arbitrary URLs. A consuming party can choose which database identifiers they support are are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring every consuming party to independently track which URLs are in use.
+The information conveyed is a DNS Filtering Database Entry, specified in {{entry-id}}. This abstraction is necessary because allowing DNS resolvers to inject links or user-visible messages would bring unique challenges. DNS resolvers are often automatically configured by unknown networks and DNS responses are unauthenticated, so these messages can come from untrusted parties -- including attackers (e.g., the so-called "coffee shop" attack) that leverage many users' lack of a nuanced model of the trust relationships between all of the parties that are involved in the service they are using.
+
+This draft attempts to mitigate these risks by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents -- the DNS Filtering Database Entry -- rather than arbitrary URLs. A consuming party can choose which database identifiers they support are are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring every consuming party to independently track which URLs are in use.
 
 ## Example
 
@@ -59,7 +61,7 @@ In typical use, a DNS query that is filtered might contain an Extended DNS Error
 
 ~~~ json
 {
-  "fdb": [
+  "fdbs": [
     {"db": "example",
     "id": "abc123"},
     {"db": "lumen",
@@ -102,11 +104,11 @@ This section defines the data types used to look up the details of a filtering i
 
 ## DNS Filtering Database Entry {#entry-id}
 
-A Filtering Database ID is a short, textual string that uniquely identifies the operator of a database of filtering incidents. It uses the key "db".
+A Filtering Database Operator ID is a string identifier for the operator of a database of filtering incidents. It uses the key "db".
 
 A Filtering Incident ID is a string identifier for a particular filtering incident. It might be specific to a particular request, but need not be. It uses the key "id".
 
-An object containing both a Filtering Database ID and a Filtering Incident ID is a Filtering Database Entry.
+An object containing both a Filtering Database Operator ID and a Filtering Incident ID is a Filtering Database Entry.
 
 ~~~ json
 {
@@ -117,7 +119,7 @@ An object containing both a Filtering Database ID and a Filtering Incident ID is
 
 ## DNS Filtering Database Entry List {#entry-list}
 
-A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry MUST be a unique identifier for the same underlying incident.
+A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry MUST be related to the same underlying incident.
 
 It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "fdbs". For example:
 
@@ -131,7 +133,7 @@ Different clients will implement support for a varying set of database operators
 
 # Database Entry Resolution Templates {#template}
 
-An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Resolver Identifier Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
+An Incident Resolution Template is a URI Template {{!RFC6570}} contained in the DNS Filtering Database Registry ({{registry}}) that, upon expansion, provides a URI that can be dereferenced to obtain details about the filtering incident.
 
 It MUST be a Level 1 or Level 2 template (see {{Section 1.2 of RFC6570}}). It has the following variables from the Filtering Database Entry (see {{entry-id}}) available to it:
 
@@ -147,7 +149,7 @@ For example:
 https://resolver.example.com/filtering-incidents/{inc}
 ~~~
 
-Applications MUST store a local copy of the DNS Resolver Identifier Registry for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
+Applications MUST store a local copy of the DNS Filtering Database Registry ({{registry}}) for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
 
 
 # IANA Considerations
@@ -170,19 +172,19 @@ Specification:
 {: spacing="compact"}
 
 
-## The DNS Resolver Identifier Registry {#registry}
+## The DNS Filtering Database Registry {#registry}
 
-IANA will establish a new registry, the "DNS Resolver Identifier Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.
+IANA will establish a new registry, the "DNS Filtering Database Registry." Its registration policy is first-come, first-served (FCFS), although IANA may refuse registrations that it deems to be deceptive or spurious.
 
 It contains the following fields:
 
 Name:
-: The name of the DNS resolver operator
+: The name of the DNS Filtering Database
 
 Contact:
 : an e-mail address or other appropriate contact mechanism
 
-DNS Resolver Database ID:
+Filtering Database Operator ID:
 : see {{entry-id}}
 
 Incident Resolution Template:
@@ -192,11 +194,11 @@ The Incident Resolution Template can be updated by the contact at any time. Howe
 
 # Security Considerations
 
-This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Resolver Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
+This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Filtering Database Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
 
 The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.
 
-Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which operators' error messages they display to users. This decision might be influenced by the identity of the resolver (e.g., so-called "public resolvers" are likely to use this mechanism responsibly), its history (e.g., a well-known Internet Service Provider that has been subject to legal filtering orders), or local configuration (e.g., application or operating system settings that indicate that a particular resolver is to be trusted).
+Because the registry is first-come, first-served, Applications (such as Web browsers) will need to exercise judgement regarding which database operators' error messages they display to users. This decision might be influenced by the identity of the resolver producing the error message, the database operator, or local configuration.
 
 --- back
 
