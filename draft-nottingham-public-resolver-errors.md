@@ -119,7 +119,7 @@ An object containing both a Filtering Database ID and a Filtering Incident ID is
 
 ## DNS Filtering Database Entry List {#entry-list}
 
-A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry MUST be a unique identifier for the same underlying incident.
+A DNS Filtering Database Entries list is an array of Filtering Database Entry objects. Each entry MUST be related to the same underlying incident.
 
 It is carried in the EXTRA-TEXT field of the Extended DNS Error with the JSON field name "fdbs". For example:
 
