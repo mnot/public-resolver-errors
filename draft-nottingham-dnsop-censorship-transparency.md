@@ -150,7 +150,9 @@ For example:
 https://resolver.example.com/filtering-incidents/{id}
 ~~~
 
-Applications MUST store a local copy of the DNS Filtering Database Registry ({{registry}}) for purposes of template lookup; they MUST NOT query the IANA registry upon each use. The registry is keyed by the Filtering Database Operator ID.
+Applications MUST store a local copy of the DNS Filtering Database Registry ({{registry}}) for purposes of template lookup; they MUST NOT query the IANA registry upon each use.
+Applications SHOULD refresh their local copy of the registry on a periodic basis using a cached retrieval mechanism (e.g., conditional requests) and appropriate rate limiting. When the registry cannot be refreshed, applications SHOULD continue using the last known good copy. Applications MUST ignore unknown or malformed registry entries.
+ The registry is keyed by the Filtering Database Operator ID.
 
 
 # IANA Considerations
