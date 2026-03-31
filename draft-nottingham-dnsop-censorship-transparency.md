@@ -55,6 +55,18 @@ The information conveyed is a DNS Filtering Database Entry, specified in {{entry
 
 This specification attempts to mitigate these risks by minimising the information carried in the DNS response to abstract, publicly registered identifiers associated with databases of filtering incidents -- the DNS Filtering Database Entry -- rather than arbitrary URLs. An application can choose which database identifiers they support and are willing to direct their users to, without enabling every DNS server to surface arbitrary links and text, and without requiring the consuming party to independently track which URLs are in use.
 
+This document does not recommend or encourage DNS filtering. Instead, it specifies
+a transparency mechanism for cases where filtering is already deployed (including
+where it is legally mandated), and where user agents need a safer way to provide
+context without relying on spoofed block pages or resolver-injected user-visible
+messages.
+
+Applicability: this mechanism is most appropriate when filtering decisions have
+externally meaningful justification (for example, legal or policy requirements)
+and when user-facing context is desired. It is not intended to be a generic
+channel for arbitrary resolver messaging, nor does it define how filtering
+decisions are made.
+
 ## Example
 
 In typical use, a DNS query that is filtered might contain an Extended DNS Error Code 17 (see {{!RFC8914}}) and an EXTRA-TEXT field "fdbs", which is an array of references to filtering database entries:
