@@ -200,6 +200,10 @@ The Database Entry Resolution Template can be updated by the contact at any time
 
 This specification does not provide a way to authenticate that a particular filtering incident as experienced by an application was actually associated with the information presented. This means that an attacker (for example, one controlling a DNS resolver) can claim that a particular filtering incident is occurring when in fact it is not. However, a successful attack would need to reuse an existing DNS Filtering Database Operator ID and Filtering Incident ID that combine to expand to a URL that can be successfully dereferenced. Doing so is not currently thought to be particularly advantageous to an attacker to do so. Future iterations of this specification may introduce more robust protections.
 
+User agents MUST treat all values derived from DNS responses as untrusted input. In particular, they SHOULD NOT automatically navigate to incident URLs. If an application offers a “more information” affordance, it SHOULD clearly indicate the destination origin and that the assertion is not cryptographically authenticated.
+
+Before displaying or offering navigation to an incident URL, applications SHOULD apply standard URL safety checks (e.g., restricting to appropriate schemes such as https, safe rendering of internationalized domain names, and proper escaping of untrusted text in UI surfaces).
+
 The details of DNS responses are not available to all applications, depending on how they are architected and the information made available to them by their host. As a result, this mechanism is not reliable; some applications will not be able to display this error information.
 
 Because the registry is first-come first-served, applications (such as Web browsers) will need to exercise judgement regarding which database operators' error messages they display to users. This decision might be influenced by the identity of the resolver producing the error message, the database operator, or local configuration.
