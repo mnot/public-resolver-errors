@@ -1,7 +1,7 @@
 ---
 title: DNS Filtering Transparency
 abbrev:
-docname: draft-nottingham-dnsop-censorship-transparency-latest
+docname: draft-ietf-dnsop-filtering-transparency-latest
 date:
 category: std
 
@@ -21,7 +21,7 @@ author:
       - Melbourne
     country: Australia
     email: mnot@mnot.net
-    uri: https://www.mnot.net/
+    uri: https://mnot.net/
  -
     ins: D. Adrian
     name: David Adrian
